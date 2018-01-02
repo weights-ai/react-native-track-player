@@ -155,13 +155,13 @@ public class MediaNotification {
 
         // Check and update action buttons
         long mask = playback.getActions();
-        rewind = addAction(rewind, mask, PlaybackStateCompat.ACTION_REWIND, "Rewind", rewindIcon, actions, compact, playing);
-        previous = addAction(previous, mask, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS, "Previous", previousIcon, actions, compact, playing);
-        play = addAction(play, mask, PlaybackStateCompat.ACTION_PLAY, "Play", playIcon, actions, compact, playing);
-        pause = addAction(pause, mask, PlaybackStateCompat.ACTION_PAUSE, "Pause", pauseIcon, actions, compact, playing);
-        stop = addAction(stop, mask, PlaybackStateCompat.ACTION_STOP, "Stop", stopIcon, actions, compact, playing);
-        next = addAction(next, mask, PlaybackStateCompat.ACTION_SKIP_TO_NEXT, "Next", nextIcon, actions, compact, playing);
-        forward = addAction(forward, mask, PlaybackStateCompat.ACTION_FAST_FORWARD, "Forward", forwardIcon, actions, compact, playing);
+        rewind = addAction(rewind, mask, PlaybackStateCompat.ACTION_REWIND, "⟲ 30 сек", rewindIcon, actions, compact, playing);
+        previous = addAction(previous, mask, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS, "Предыдущий", previousIcon, actions, compact, playing);
+        play = addAction(play, mask, PlaybackStateCompat.ACTION_PLAY, "Играть", playIcon, actions, compact, playing);
+        pause = addAction(pause, mask, PlaybackStateCompat.ACTION_PAUSE, "Пауза", pauseIcon, actions, compact, playing);
+        stop = addAction(stop, mask, PlaybackStateCompat.ACTION_STOP, "Стоп", stopIcon, actions, compact, playing);
+        next = addAction(next, mask, PlaybackStateCompat.ACTION_SKIP_TO_NEXT, "Следующий", nextIcon, actions, compact, playing);
+        forward = addAction(forward, mask, PlaybackStateCompat.ACTION_FAST_FORWARD, "⟳ 30 сек", forwardIcon, actions, compact, playing);
 
         // Create the compact indexes array
         int[] compactIndexes = new int[compact.size()];
