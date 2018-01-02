@@ -19,6 +19,7 @@ import android.view.KeyEvent;
 import guichaguri.trackplayer.logic.Utils;
 import guichaguri.trackplayer.logic.services.PlayerService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,7 +49,10 @@ public class MediaNotification {
         this.nb = new NotificationCompat.Builder(context);
         this.style = new MediaStyle().setMediaSession(session.getSessionToken());
 
-        nb.setStyle(style);
+        if (shouldUseStyle()) {
+            nb.setStyle(style);
+        }
+
         nb.setCategory(NotificationCompat.CATEGORY_TRANSPORT);
         nb.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         nb.setDeleteIntent(createActionIntent(PlaybackStateCompat.ACTION_STOP));
@@ -170,7 +174,10 @@ public class MediaNotification {
         style.setShowActionsInCompactView(compactIndexes);
 
         // Update the notification
-        nb.setStyle(style);
+        if (shouldUseStyle()) {
+            nb.setStyle(style);
+        }
+
         update();
     }
 
@@ -249,6 +256,18 @@ public class MediaNotification {
         } catch(Exception ex) {
             Log.w(Utils.TAG, "Something went wrong while updating the notification", ex);
         }
+    }
+
+    private boolean shouldUseStyle() {
+        return !Arrays.asList(
+                "TIT-L01",
+                "GEM-701L",
+                "HUAWEI TAG-L01",
+                "HUAWEI TIT-U02",
+                "HUAWEI TAG-L21",
+                "HUAWEI LUA-U22",
+                "HUAWEI LUA-L21"
+        ).contains(Build.MODEL);
     }
 
     public Notification build() {
