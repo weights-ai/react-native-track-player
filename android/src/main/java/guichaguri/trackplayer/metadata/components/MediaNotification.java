@@ -262,6 +262,7 @@ public class MediaNotification {
         return !Arrays.asList(
                 "TIT-L01",
                 "GEM-701L",
+                "ALE-L21",
                 "HUAWEI TAG-L01",
                 "HUAWEI TIT-U02",
                 "HUAWEI TAG-L21",
