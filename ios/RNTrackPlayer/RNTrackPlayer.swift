@@ -66,7 +66,8 @@ class RNTrackPlayer: RCTEventEmitter, MediaWrapperDelegate {
             "CAPABILITY_SKIP_TO_NEXT": Capability.next.rawValue,
             "CAPABILITY_SKIP_TO_PREVIOUS": Capability.previous.rawValue,
             "CAPABILITY_JUMP_FORWARD": Capability.jumpForward.rawValue,
-            "CAPABILITY_JUMP_BACKWARD": Capability.jumpBackward.rawValue
+            "CAPABILITY_JUMP_BACKWARD": Capability.jumpBackward.rawValue,
+            "CAPABILITY_SEEK_TO": Capability.seekTo.rawValue
         ]
     }
     
@@ -85,6 +86,7 @@ class RNTrackPlayer: RCTEventEmitter, MediaWrapperDelegate {
             "remote-previous",
             "remote-jump-forward",
             "remote-jump-backward",
+            "remote-seek-to",
         ]
     }
     
@@ -121,14 +123,17 @@ class RNTrackPlayer: RCTEventEmitter, MediaWrapperDelegate {
         let enablePlayPrevious = capabilities.contains(.previous)
         let enableSkipForward = capabilities.contains(.jumpForward)
         let enableSkipBackward = capabilities.contains(.jumpBackward)
-        
+        let enableSeekTo = capabilities.contains(.seekTo)
+
         toggleRemoteHandler(command: remoteCenter.stopCommand, selector: #selector(remoteSentStop), enabled: enableStop)
         toggleRemoteHandler(command: remoteCenter.pauseCommand, selector: #selector(remoteSentPause), enabled: enablePause)
         toggleRemoteHandler(command: remoteCenter.playCommand, selector: #selector(remoteSentPlay), enabled: enablePlay)
         toggleRemoteHandler(command: remoteCenter.togglePlayPauseCommand, selector: #selector(remoteSentPlayPause), enabled: enablePause && enablePlay)
         toggleRemoteHandler(command: remoteCenter.nextTrackCommand, selector: #selector(remoteSentNext), enabled: enablePlayNext)
         toggleRemoteHandler(command: remoteCenter.previousTrackCommand, selector: #selector(remoteSentPrevious), enabled: enablePlayPrevious)
-        
+        if #available(iOS 9.1, *) {
+            toggleRemoteHandler(command: remoteCenter.changePlaybackPositionCommand, selector: #selector(remoteSentSeekTo), enabled: enableSeekTo)
+        }
         
         remoteCenter.skipForwardCommand.preferredIntervals = [options["jumpInterval"] as? NSNumber ?? 15]
         remoteCenter.skipBackwardCommand.preferredIntervals = [options["jumpInterval"] as? NSNumber ?? 15]
@@ -305,7 +310,11 @@ class RNTrackPlayer: RCTEventEmitter, MediaWrapperDelegate {
     func remoteSentPrevious() {
         sendEvent(withName: "remote-previous", body: nil)
     }
-    
+
+    func remoteSentSeekTo(event: MPChangePlaybackPositionCommandEvent) {
+        sendEvent(withName: "remote-seek-to", body: ["position": event.positionTime])
+    }
+
     func remoteSendSkipForward(event: MPSkipIntervalCommandEvent) {
         sendEvent(withName: "remote-jump-forward", body: ["interval": event.interval])
     }
