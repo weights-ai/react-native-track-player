@@ -1,5 +1,6 @@
 package com.guichaguri.trackplayer.service;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
@@ -8,11 +9,13 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import androidx.core.app.NotificationCompat;
 import android.support.v4.media.RatingCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
+import com.guichaguri.trackplayer.R;
 
 /**
  * @author Guichaguri
@@ -22,6 +25,7 @@ public class Utils {
     public static final String EVENT_INTENT = "com.guichaguri.trackplayer.event";
     public static final String CONNECT_INTENT = "com.guichaguri.trackplayer.connect";
     public static final String NOTIFICATION_CHANNEL = "com.guichaguri.trackplayer";
+    public static final String SETUP_NOTIFICATION_CHANNEL = "com.guichaguri.trackplayer-setup";
     public static final String LOG = "RNTrackPlayer";
 
     public static Runnable toRunnable(Promise promise) {
@@ -172,5 +176,29 @@ public class Utils {
             ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
         }
         return Utils.NOTIFICATION_CHANNEL;
+    }
+
+    public static String getSetupNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                Utils.SETUP_NOTIFICATION_CHANNEL,
+                "Playback setup",
+                NotificationManager.IMPORTANCE_NONE
+            );
+            channel.setShowBadge(false);
+            channel.setSound(null, null);
+            ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+        }
+        return Utils.SETUP_NOTIFICATION_CHANNEL;
+    }
+
+    public static Notification createBlankSetupNotification(Context context) {
+        String channel = getSetupNotificationChannel(context);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channel);
+        Notification notification = notificationBuilder.setPriority(NotificationManager.IMPORTANCE_MIN)
+            .setSmallIcon(R.drawable.play)
+            .setCategory(Notification.CATEGORY_SERVICE)
+            .build();
+        return notification;
     }
 }
