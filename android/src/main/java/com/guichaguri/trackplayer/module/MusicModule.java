@@ -67,24 +67,28 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        binder = (MusicBinder)service;
-        connecting = false;
+        synchronized(this) {
+            binder = (MusicBinder) service;
+            connecting = false;
 
-        // Reapply options that user set before with updateOptions
-        if (options != null) {
-            binder.updateOptions(options);
-        }
+            // Reapply options that user set before with updateOptions
+            if (options != null) {
+                binder.updateOptions(options);
+            }
 
-        // Triggers all callbacks
-        while(!initCallbacks.isEmpty()) {
-            binder.post(initCallbacks.remove());
+            // Triggers all callbacks
+            while (!initCallbacks.isEmpty()) {
+                binder.post(initCallbacks.remove());
+            }
         }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        binder = null;
-        connecting = false;
+        synchronized(this) {
+            binder = null;
+            connecting = false;
+        }
     }
 
     /**
@@ -161,7 +165,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void setupPlayer(ReadableMap data, final Promise promise) {
+    public synchronized void setupPlayer(ReadableMap data, final Promise promise) {
         final Bundle options = Arguments.toBundle(data);
 
         waitForConnection(() -> binder.setupPlayer(options, promise));
@@ -173,11 +177,13 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void destroy() {
+    public synchronized void destroy() {
         try {
-            if(binder != null) {
-                binder.destroy();
-                binder = null;
+            synchronized(this) {
+                if(binder != null) {
+                    binder.destroy();
+                    binder = null;
+                }
             }
 
             ReactContext context = getReactApplicationContext();
@@ -189,7 +195,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void updateOptions(ReadableMap data, final Promise callback) {
+    public synchronized void updateOptions(ReadableMap data, final Promise callback) {
         // keep options as we may need them for correct MetadataManager reinitialization later
         options = Arguments.toBundle(data);
 
@@ -200,7 +206,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void add(ReadableArray tracks, final String insertBeforeId, final Promise callback) {
+    public synchronized void add(ReadableArray tracks, final String insertBeforeId, final Promise callback) {
         final ArrayList bundleList = Arguments.toList(tracks);
 
         runOnConnectionOrReject(callback, () -> {
@@ -240,7 +246,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void remove(ReadableArray tracks, final Promise callback) {
+    public synchronized void remove(ReadableArray tracks, final Promise callback) {
         final ArrayList trackList = Arguments.toList(tracks);
 
         runOnConnectionOrReject(callback, () -> {
@@ -267,7 +273,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void updateMetadataForTrack(String id, ReadableMap map, final Promise callback) {
+    public synchronized void updateMetadataForTrack(String id, ReadableMap map, final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             ExoPlayback playback = binder.getPlayback();
             List<Track> queue = playback.getQueue();
@@ -294,7 +300,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void removeUpcomingTracks(final Promise callback) {
+    public synchronized void removeUpcomingTracks(final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             binder.getPlayback().removeUpcomingTracks();
             callback.resolve(null);
@@ -302,22 +308,22 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void skip(final String track, final Promise callback) {
+    public synchronized void skip(final String track, final Promise callback) {
         runOnConnectionOrReject(callback, () -> binder.getPlayback().skip(track, callback));
     }
 
     @ReactMethod
-    public void skipToNext(final Promise callback) {
+    public synchronized void skipToNext(final Promise callback) {
         runOnConnectionOrReject(callback, () -> binder.getPlayback().skipToNext(callback));
     }
 
     @ReactMethod
-    public void skipToPrevious(final Promise callback) {
+    public synchronized void skipToPrevious(final Promise callback) {
         runOnConnectionOrReject(callback, () -> binder.getPlayback().skipToPrevious(callback));
     }
 
     @ReactMethod
-    public void reset(final Promise callback) {
+    public synchronized void reset(final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             binder.getPlayback().reset();
             callback.resolve(null);
@@ -325,7 +331,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void play(final Promise callback) {
+    public synchronized void play(final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             binder.getPlayback().play();
             callback.resolve(null);
@@ -333,7 +339,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void pause(final Promise callback) {
+    public synchronized void pause(final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             binder.getPlayback().pause();
             callback.resolve(null);
@@ -341,7 +347,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void stop(final Promise callback) {
+    public synchronized void stop(final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             binder.getPlayback().stop();
             callback.resolve(null);
@@ -349,7 +355,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void seekTo(final float seconds, final Promise callback) {
+    public synchronized void seekTo(final float seconds, final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             long secondsToSkip = Utils.toMillis(seconds);
             binder.getPlayback().seekTo(secondsToSkip);
@@ -358,7 +364,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void setVolume(final float volume, final Promise callback) {
+    public synchronized void setVolume(final float volume, final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             binder.getPlayback().setVolume(volume);
             callback.resolve(null);
@@ -366,7 +372,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getVolume(final Promise callback) {
+    public synchronized void getVolume(final Promise callback) {
         if(binder == null) {
             callback.resolve(null);
         } else {
@@ -375,7 +381,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void setRate(final float rate, final Promise callback) {
+    public synchronized void setRate(final float rate, final Promise callback) {
         runOnConnectionOrReject(callback, () -> {
             binder.getPlayback().setRate(rate);
             callback.resolve(null);
@@ -383,7 +389,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getRate(final Promise callback) {
+    public synchronized void getRate(final Promise callback) {
         if(binder == null) {
             callback.resolve(null);
         } else {
@@ -392,7 +398,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getTrack(final String id, final Promise callback) {
+    public synchronized void getTrack(final String id, final Promise callback) {
         if(binder == null) {
             callback.resolve(null);
         } else {
@@ -412,7 +418,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getQueue(Promise callback) {
+    public synchronized void getQueue(Promise callback) {
         if(binder == null) {
             callback.resolve(new ArrayList());
         } else {
@@ -430,7 +436,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getCurrentTrack(final Promise callback) {
+    public synchronized void getCurrentTrack(final Promise callback) {
         if(binder == null) {
             callback.resolve(null);
         } else {
@@ -447,7 +453,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getDuration(final Promise callback) {
+    public synchronized void getDuration(final Promise callback) {
         if(binder == null) {
             callback.resolve(Utils.toSeconds(0));
         } else {
@@ -464,7 +470,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getBufferedPosition(final Promise callback) {
+    public synchronized void getBufferedPosition(final Promise callback) {
         if(binder == null) {
             callback.resolve(Utils.toSeconds(0));
         } else {
@@ -481,7 +487,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getPosition(final Promise callback) {
+    public synchronized void getPosition(final Promise callback) {
         // TODO Probably should just return null instead of rejection, but kept as it is a breaking change
         if(binder == null) {
             callback.reject("unknown", "Unknown position");
@@ -499,7 +505,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     }
 
     @ReactMethod
-    public void getState(final Promise callback) {
+    public synchronized void getState(final Promise callback) {
         if(binder == null) {
             callback.resolve(PlaybackStateCompat.STATE_NONE);
         } else {
