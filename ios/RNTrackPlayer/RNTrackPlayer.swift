@@ -179,7 +179,20 @@ public class RNTrackPlayer: RCTEventEmitter {
         }
         
         player.event.fail.addListener(self) { [weak self] error in
-            self?.sendEvent(withName: "playback-error", body: ["error": error?.localizedDescription])
+            guard let e = error as? NSError else {
+                self?.sendEvent(withName: "playback-error", body: [
+                    "error": error?.localizedDescription,
+                    "message": error?.localizedDescription,
+                    ])
+                return
+            }
+
+            self?.sendEvent(withName: "playback-error", body: [
+                "error": e.localizedDescription,
+                "code": e.code,
+                "message": e.localizedDescription,
+                "domain": e.domain,
+            ])
         }
         
         player.event.playbackEnd.addListener(self) { [weak self] reason in
