@@ -359,7 +359,11 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
 
     @ReactMethod
     public void getVolume(final Promise callback) {
-        waitForConnection(() -> callback.resolve(binder.getPlayback().getVolume()));
+        if(binder == null) {
+            callback.resolve(null);
+        } else {
+            binder.post(() -> callback.resolve(binder.getPlayback().getVolume()));
+        }
     }
 
     @ReactMethod
@@ -372,93 +376,126 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
 
     @ReactMethod
     public void getRate(final Promise callback) {
-        waitForConnection(() -> callback.resolve(binder.getPlayback().getRate()));
+        if(binder == null) {
+            callback.resolve(null);
+        } else {
+            binder.post(() -> callback.resolve(binder.getPlayback().getRate()));
+        }
     }
 
     @ReactMethod
     public void getTrack(final String id, final Promise callback) {
-        waitForConnection(() -> {
-            List<Track> tracks = binder.getPlayback().getQueue();
-
-            for(Track track : tracks) {
-                if(track.id.equals(id)) {
-                    callback.resolve(Arguments.fromBundle(track.originalItem));
-                    return;
-                }
-            }
-
+        if(binder == null) {
             callback.resolve(null);
-        });
+        } else {
+            binder.post(() -> {
+                List<Track> tracks = binder.getPlayback().getQueue();
+
+                for(Track track : tracks) {
+                    if(track.id.equals(id)) {
+                        callback.resolve(Arguments.fromBundle(track.originalItem));
+                        return;
+                    }
+                }
+
+                callback.resolve(null);
+            });
+        }
     }
 
     @ReactMethod
     public void getQueue(Promise callback) {
-        waitForConnection(() -> {
-            List queue = new ArrayList();
-            List<Track> tracks = binder.getPlayback().getQueue();
+        if(binder == null) {
+            callback.resolve(new ArrayList());
+        } else {
+            binder.post(() -> {
+                List queue = new ArrayList();
+                List<Track> tracks = binder.getPlayback().getQueue();
 
-            for(Track track : tracks) {
-                queue.add(track.originalItem);
-            }
+                for(Track track : tracks) {
+                    queue.add(track.originalItem);
+                }
 
-            callback.resolve(Arguments.fromList(queue));
-        });
+                callback.resolve(Arguments.fromList(queue));
+            });
+        }
     }
 
     @ReactMethod
     public void getCurrentTrack(final Promise callback) {
-        waitForConnection(() -> {
-            Track track = binder.getPlayback().getCurrentTrack();
+        if(binder == null) {
+            callback.resolve(null);
+        } else {
+            binder.post(() -> {
+                Track track = binder.getPlayback().getCurrentTrack();
 
-            if(track == null) {
-                callback.resolve(null);
-            } else {
-                callback.resolve(track.id);
-            }
-        });
+                if(track == null) {
+                    callback.resolve(null);
+                } else {
+                    callback.resolve(track.id);
+                }
+            });
+        }
     }
 
     @ReactMethod
     public void getDuration(final Promise callback) {
-        waitForConnection(() -> {
-            long duration = binder.getPlayback().getDuration();
+        if(binder == null) {
+            callback.resolve(Utils.toSeconds(0));
+        } else {
+            binder.post(() -> {
+                long duration = binder.getPlayback().getDuration();
 
-            if(duration == C.TIME_UNSET) {
-                callback.resolve(Utils.toSeconds(0));
-            } else {
-                callback.resolve(Utils.toSeconds(duration));
-            }
-        });
+                if(duration == C.TIME_UNSET) {
+                    callback.resolve(Utils.toSeconds(0));
+                } else {
+                    callback.resolve(Utils.toSeconds(duration));
+                }
+            });
+        }
     }
 
     @ReactMethod
     public void getBufferedPosition(final Promise callback) {
-        waitForConnection(() -> {
-            long position = binder.getPlayback().getBufferedPosition();
+        if(binder == null) {
+            callback.resolve(Utils.toSeconds(0));
+        } else {
+            binder.post(() -> {
+                long position = binder.getPlayback().getBufferedPosition();
 
-            if(position == C.POSITION_UNSET) {
-                callback.resolve(Utils.toSeconds(0));
-            } else {
-                callback.resolve(Utils.toSeconds(position));
-            }
-        });
+                if(position == C.POSITION_UNSET) {
+                    callback.resolve(Utils.toSeconds(0));
+                } else {
+                    callback.resolve(Utils.toSeconds(position));
+                }
+            });
+        }
     }
 
     @ReactMethod
     public void getPosition(final Promise callback) {
-        waitForConnection(() -> {
-            long position = binder.getPlayback().getPosition();
+        // TODO Probably should just return null instead of rejection, but kept as it is a breaking change
+        if(binder == null) {
+            callback.reject("unknown", "Unknown position");
+        } else {
+            binder.post(() -> {
+                long position = binder.getPlayback().getPosition();
 
-            if(position == C.POSITION_UNSET) {
-                callback.reject("unknown", "Unknown position");
-            } else {
-                callback.resolve(Utils.toSeconds(position));
-            }
-        });
+                if(position == C.POSITION_UNSET) {
+                    callback.reject("unknown", "Unknown position");
+                } else {
+                    callback.resolve(Utils.toSeconds(position));
+                }
+            });
+        }
     }
 
     @ReactMethod
     public void getState(final Promise callback) {
-        waitForConnection(() -> callback.resolve(binder.getPlayback().getState()));
+        if(binder == null) {
+            callback.resolve(PlaybackStateCompat.STATE_NONE);
+        } else {
+            binder.post(() -> callback.resolve(binder.getPlayback().getState()));
+        }
     }
 }
