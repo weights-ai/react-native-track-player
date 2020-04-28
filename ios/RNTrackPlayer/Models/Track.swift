@@ -10,7 +10,7 @@ import Foundation
 import MediaPlayer
 import AVFoundation
 
-class Track: NSObject, AudioItem, InitialTiming, TimePitching, Authorizing {
+class Track: NSObject, AudioItem, TimePitching, AssetOptionsProviding {
     let id: String
     let url: MediaURL
     
@@ -22,7 +22,6 @@ class Track: NSObject, AudioItem, InitialTiming, TimePitching, Authorizing {
     var genre: String?
     var duration: Double?
     var skipped: Bool = false
-    var initialTime: TimeInterval = 0.0;
     var artworkURL: MediaURL?
     let headers: [String: Any]?
     let pitchAlgorithm: String?
@@ -53,11 +52,6 @@ class Track: NSObject, AudioItem, InitialTiming, TimePitching, Authorizing {
         self.artworkURL = MediaURL(object: dictionary["artwork"])
         self.pitchAlgorithm = dictionary["pitchAlgorithm"] as? String
         
-        let initialTime = dictionary["initialTime"] as? Double        
-        if let x = initialTime {
-            self.initialTime = x
-        }
-        
         self.originalObject = dictionary
     }
     
@@ -82,12 +76,6 @@ class Track: NSObject, AudioItem, InitialTiming, TimePitching, Authorizing {
         self.originalObject = self.originalObject.merging(dictionary) { (_, new) in new }
     }
     
-    // MARK: - InitialTiming Protocol
-    
-    func getInitialTime() -> TimeInterval {
-        return initialTime
-    }
-
     // MARK: - AudioItem Protocol
     
     func getSourceUrl() -> String {
@@ -112,20 +100,25 @@ class Track: NSObject, AudioItem, InitialTiming, TimePitching, Authorizing {
     
     func getArtwork(_ handler: @escaping (UIImage?) -> Void) {
         if let artworkURL = artworkURL?.value {
-            URLSession.shared.dataTask(with: artworkURL, completionHandler: { (data, _, error) in
-                if let data = data, let artwork = UIImage(data: data), error == nil {
-                    handler(artwork)
-                }
-                
-                handler(nil)
-            }).resume()
+            if(self.artworkURL?.isLocal ?? false){
+                let image = UIImage.init(contentsOfFile: artworkURL.path);
+                handler(image);
+            } else {
+                URLSession.shared.dataTask(with: artworkURL, completionHandler: { (data, _, error) in
+                    if let data = data, let artwork = UIImage(data: data), error == nil {
+                        handler(artwork)
+                    }
+                    
+                    handler(nil)
+                }).resume()
+            }
         }
         
         handler(nil)
     }
-
+    
     // MARK: - TimePitching Protocol
-
+    
     func getPitchAlgorithmType() -> AVAudioTimePitchAlgorithm {
         if let pitchAlgorithm = pitchAlgorithm {
             switch pitchAlgorithm {
@@ -145,8 +138,12 @@ class Track: NSObject, AudioItem, InitialTiming, TimePitching, Authorizing {
     
     // MARK: - Authorizing Protocol
     
-    func getHeaders() -> [String : Any] {
-        return headers ?? [:]
+    func getAssetOptions() -> [String: Any] {
+        if let headers = headers {
+            return ["AVURLAssetHTTPHeaderFieldsKey": headers]
+        }
+        
+        return [:]
     }
     
 }
