@@ -113,7 +113,7 @@ public class RNTrackPlayerAudioPlayer: QueuedAudioPlayer {
         data["title"] = getMetadataItem(forIdentifier: .commonIdentifierTitle)
         data["artist"] = getMetadataItem(forIdentifier: .commonIdentifierArtist)
         data["album"] = getMetadataItem(forIdentifier: .commonIdentifierAlbumName)
-        data["date"] = getMetadataItem(forIdentifier: .commonIdentifierCreationDate);
+        data["date"] = getMetadataItem(forIdentifier: .commonIdentifierCreationDate)
 
         if (source == "icy-headers") {
             data["title"] = getMetadataItem(forIdentifier: .icyMetadataStreamTitle)
