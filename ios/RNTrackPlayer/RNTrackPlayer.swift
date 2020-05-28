@@ -266,8 +266,12 @@ public class RNTrackPlayer: RCTEventEmitter {
     public func update(options: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         player.nowPlayingInfoController.set(keyValues: [NowPlayingInfoProperty.isLiveStream(true)])
 
-        let capabilitiesStr = options["capabilities"] as? [String]
-        let capabilities = capabilitiesStr?.compactMap { Capability(rawValue: $0) } ?? []
+        var capabilitiesStr = options["capabilities"] as? [String] ?? []
+        if (capabilitiesStr.contains("play") && capabilitiesStr.contains("pause")) {
+            capabilitiesStr = capabilitiesStr.filter { $0 != "play" && $0 != "pause" }
+            capabilitiesStr.append("togglePlayPause");
+        }
+        let capabilities = capabilitiesStr.compactMap { Capability(rawValue: $0) }
         
         let remoteCommands = capabilities.map { capability in
             capability.mapToPlayerCommand(jumpInterval: options["jumpInterval"] as? NSNumber,
