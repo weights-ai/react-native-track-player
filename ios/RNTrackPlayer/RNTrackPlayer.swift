@@ -265,6 +265,10 @@ public class RNTrackPlayer: RCTEventEmitter {
     @objc(updateOptions:resolver:rejecter:)
     public func update(options: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         let capabilitiesStr = options["capabilities"] as? [String]
+        if (capabilitiesStr?.contains("play") && capabilitiesStr?.contains("pause")) {
+            capabilitiesStr = capabilitiesStr.filter { $0 != "play" && $0 != "pause" }
+            capabilitiesStr.append("togglePlayPause");
+        }
         let capabilities = capabilitiesStr?.compactMap { Capability(rawValue: $0) } ?? []
         
         let remoteCommands = capabilities.map { capability in
