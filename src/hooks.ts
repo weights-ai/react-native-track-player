@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
+import { Event, EventsPayloadByEvent, ProgressState, State } from './interfaces'
 import TrackPlayer from './trackPlayer'
-import { State, Event, ProgressState } from './interfaces'
 
 /** Get current playback state and subsequent updates  */
 export const usePlaybackState = () => {
@@ -40,20 +40,17 @@ export const usePlaybackState = () => {
   return state
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Handler = (payload: { type: Event; [key: string]: any }) => void
-
 /**
  * Attaches a handler to the given TrackPlayer events and performs cleanup on unmount
  * @param events - TrackPlayer events to subscribe to
  * @param handler - callback invoked when the event fires
  */
-export const useTrackPlayerEvents = (events: Event[], handler: Handler) => {
-  const savedHandler = useRef<Handler>()
-
-  useEffect(() => {
-    savedHandler.current = handler
-  }, [handler])
+export const useTrackPlayerEvents = <T extends Event[], H extends (data: EventsPayloadByEvent[T[number]]) => void>(
+  events: T,
+  handler: H,
+) => {
+  const savedHandler = useRef(handler)
+  savedHandler.current = handler
 
   useEffect(() => {
     if (__DEV__) {
@@ -70,8 +67,9 @@ export const useTrackPlayerEvents = (events: Event[], handler: Handler) => {
     }
 
     const subs = events.map(event =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      TrackPlayer.addEventListener(event, payload => savedHandler.current!({ ...payload, type: event })),
+      TrackPlayer.addEventListener(event, payload => {
+        savedHandler.current({ ...payload, type: event } as any)
+      }),
     )
 
     return () => subs.forEach(sub => sub.remove())
