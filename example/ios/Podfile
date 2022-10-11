@@ -21,7 +21,7 @@ target 'example' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-  # pod 'react-native-track-player', :path => '../..'
+  pod 'SwiftAudioEx', :git => 'https://github.com/puckey/SwiftAudioEx.git', :branch => 'feature/queue-improvements'
 
   target 'exampleTests' do
     inherit! :complete
