@@ -603,7 +603,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
     }
 
     @ReactMethod
-    fun getState(callback: Promise) = scope.launch {
+    fun getPlaybackState(callback: Promise) = scope.launch {
         if (verifyServiceBoundOrReject(callback)) return@launch
         callback.resolve(musicService.getPlayerStateBundle(musicService.state))
     }
