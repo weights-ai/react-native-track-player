@@ -2,6 +2,7 @@ import { Event } from '../../constants';
 
 import { EqualizerSettings } from '../EqualizerSettings';
 import type { PlaybackState } from '../PlaybackState';
+import { SleepTimerChangedEvent } from '../SleepTimer';
 import type { PlaybackActiveTrackChangedEvent } from './PlaybackActiveTrackChangedEvent';
 import type { PlaybackErrorEvent } from './PlaybackErrorEvent';
 import type { PlaybackMetadataReceivedEvent } from './PlaybackMetadataReceivedEvent';
@@ -64,4 +65,8 @@ export interface EventsPayloadByEvent {
   [Event.RemoteLike]: { type: Event.RemoteLike };
   [Event.RemoteDislike]: { type: Event.RemoteDislike };
   [Event.RemoteBookmark]: { type: Event.RemoteBookmark };
+  [Event.SleepTimerChanged]: SleepTimerChangedEvent & {
+    type: Event.SleepTimerChanged;
+  };
+  [Event.SleepTimerComplete]: { type: Event.SleepTimerComplete; };
 }

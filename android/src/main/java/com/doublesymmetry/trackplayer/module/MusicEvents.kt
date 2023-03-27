@@ -47,6 +47,9 @@ class MusicEvents(private val reactContext: ReactContext) : BroadcastReceiver() 
         const val PLAYBACK_ERROR = "playback-error"
         const val EQUALIZER_CHANGED = "equalizer-changed"
 
+        const val SLEEP_TIMER_CHANGED = "sleep-timer-changed"
+        const val SLEEP_TIMER_COMPLETE = "sleep-timer-complete"
+
         const val EVENT_INTENT = "com.doublesymmetry.trackplayer.event"
     }
 }

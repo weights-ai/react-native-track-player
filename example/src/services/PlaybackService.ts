@@ -67,4 +67,12 @@ export async function PlaybackService() {
       });
     }
   );
+
+  TrackPlayer.addEventListener(Event.SleepTimerChanged, (event) => {
+    console.log('Event.SleepTimerChanged', JSON.stringify(event, null, 2));
+  });
+
+  TrackPlayer.addEventListener(Event.SleepTimerComplete, () => {
+    console.log('Event.SleepTimerComplete');
+  });
 }
