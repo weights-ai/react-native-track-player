@@ -20,7 +20,7 @@ import type { RemoteSetRatingEvent } from './RemoteSetRatingEvent';
 import type { RemoteSkipEvent } from './RemoteSkipEvent';
 
 export interface EventsPayloadByEvent {
-  [Event.EqualizerChanged]: EqualizerSettings;
+  [Event.EqualizerChanged]: EqualizerSettings & { type: Event.EqualizerChanged };
   [Event.PlaybackState]: PlaybackState & { type: Event.PlaybackState };
   [Event.PlaybackError]: PlaybackErrorEvent & { type: Event.PlaybackError };
   [Event.PlaybackQueueEnded]: PlaybackQueueEndedEvent & {
