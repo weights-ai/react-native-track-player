@@ -510,7 +510,7 @@ export async function getRepeatMode(): Promise<RepeatMode> {
  * Note that if a sleep timer was set previously, it will be replaced by the
  * new one.
  */
-export async function setSleepTimer(seconds: number): Promise<SleepTimer> {
+export async function setSleepTimer(seconds: number): Promise<{ time: number }> {
   if (seconds <= 0) {
     throw new Error('The sleep timer must be greater than 0.');
   }
