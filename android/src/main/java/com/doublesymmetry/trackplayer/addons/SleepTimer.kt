@@ -18,7 +18,7 @@ open class SleepTimer {
             complete()
         }
         this.runnable = runnable
-        Handler(Looper.getMainLooper()).postDelayed(runnable, seconds.toLong() * 1000)
+        handler.postDelayed(runnable, seconds.toLong() * 1000)
         time = System.currentTimeMillis() + (seconds * 1000)
     }
 
@@ -40,7 +40,9 @@ open class SleepTimer {
     }
 
     private fun stopTimer() {
-        runnable?.let { handler.removeCallbacks(it) }
-        runnable = null
+        runnable?.let {
+            handler.removeCallbacks(it)
+            runnable = null
+        }
     }
 }
