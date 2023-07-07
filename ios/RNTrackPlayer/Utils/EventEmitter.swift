@@ -36,6 +36,7 @@ class EventEmitter {
         EventType.RemoteJumpBackward.rawValue,
         EventType.RemoteLike.rawValue,
         EventType.RemoteDislike.rawValue,
-        EventType.RemoteBookmark.rawValue
+        EventType.RemoteBookmark.rawValue,
+        EventType.EqualizerChanged.rawValue
     ]
 }

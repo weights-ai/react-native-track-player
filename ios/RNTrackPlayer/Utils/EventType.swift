@@ -23,4 +23,5 @@ enum EventType: String {
     case PlaybackPlayWhenReadyChanged = "playback-play-when-ready-changed"
     case SleepTimerChanged = "sleep-timer-changed"
     case SleepTimerComplete = "sleep-timer-complete"
+    case EqualizerChanged = "equalizer-changed"
 }
