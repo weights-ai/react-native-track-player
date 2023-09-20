@@ -724,8 +724,6 @@ class MusicService : HeadlessJsTaskService() {
                         (it?.oldPosition ?: 0).toSeconds()
                     )
                 }
-                var lastPosition = (it?.oldPosition ?: 0).toSeconds();
-                emitPlaybackTrackChangedEvents(player.currentIndex, lastIndex, lastPosition)
                 cancelSleepWhenActiveTrackReachesEnd()
             }
         }

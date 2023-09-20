@@ -10,6 +10,7 @@ import type { PlaybackPlayWhenReadyChangedEvent } from './PlaybackPlayWhenReadyC
 import type { PlaybackProgressUpdatedEvent } from './PlaybackProgressUpdatedEvent';
 import type { PlaybackQueueEndedEvent } from './PlaybackQueueEndedEvent';
 import type { PlaybackTrackChangedEvent } from './PlaybackTrackChangedEvent';
+import { PlayerErrorEvent } from './PlayerErrorEvent';
 import type { RemoteDuckEvent } from './RemoteDuckEvent';
 import type { RemoteJumpBackwardEvent } from './RemoteJumpBackwardEvent';
 import type { RemoteJumpForwardEvent } from './RemoteJumpForwardEvent';
@@ -19,7 +20,8 @@ import type { RemoteSeekEvent } from './RemoteSeekEvent';
 import type { RemoteSetRatingEvent } from './RemoteSetRatingEvent';
 import type { RemoteSkipEvent } from './RemoteSkipEvent';
 
-export interface EventPayloadByEvent {
+export type EventPayloadByEvent = {
+  [Event.PlayerError]: PlayerErrorEvent;
   [Event.EqualizerChanged]: EqualizerSettings;
   [Event.PlaybackState]: PlaybackState;
   [Event.PlaybackError]: PlaybackErrorEvent;
