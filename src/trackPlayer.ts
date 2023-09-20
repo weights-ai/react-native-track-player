@@ -10,6 +10,7 @@ import { default as resolveAssetSource } from 'react-native/Libraries/Image/reso
 
 import { Event, RepeatMode, State } from './constants';
 import type {
+  AddTrack,
   EqualizerSettings,
   EventPayloadByEvent,
   NowPlayingMetadata,
@@ -31,9 +32,18 @@ const emitter =
 
 // MARK: - Helpers
 
-function resolveImportedPath(path?: number | string) {
-  if (!path) return undefined;
-  return resolveAssetSource(path) || path;
+function resolveImportedAssetOrPath(pathOrAsset: string | number | undefined) {
+  return pathOrAsset === undefined
+    ? undefined
+    : typeof pathOrAsset === 'string'
+    ? pathOrAsset
+    : resolveImportedAsset(pathOrAsset)?.uri;
+}
+
+function resolveImportedAsset(id?: number) {
+  return id
+    ? (resolveAssetSource(id) as { uri: string } | null) ?? undefined
+    : undefined;
 }
 
 // MARK: - General API
@@ -47,7 +57,7 @@ function resolveImportedPath(path?: number | string) {
  * the app to be in the foreground and try again.
  *
  * @param options The options to initialize the player with.
- * @see https://react-native-track-player.js.org/docs/api/functions/lifecycle
+ * @see https://rntp.dev/docs/api/functions/lifecycle
  */
 export async function setupPlayer(options: PlayerOptions = {}): Promise<void> {
   return TrackPlayer.setupPlayer(options);
@@ -92,7 +102,7 @@ export function isServiceRunning(): Promise<boolean> {
  * By default the tracks will be added to the end of the queue.
  */
 export async function add(
-  tracks: Track[],
+  tracks: AddTrack[],
   insertBeforeIndex?: number
 ): Promise<number | void>;
 /**
@@ -103,32 +113,23 @@ export async function add(
  * By default the track will be added to the end of the queue.
  */
 export async function add(
-  track: Track,
+  track: AddTrack,
   insertBeforeIndex?: number
 ): Promise<number | void>;
 export async function add(
-  tracks: Track | Track[],
+  tracks: AddTrack | AddTrack[],
   insertBeforeIndex = -1
 ): Promise<number | void> {
-  // Clone the array before modifying it
-  if (Array.isArray(tracks)) {
-    tracks = [...tracks];
-  } else {
-    tracks = [tracks];
-  }
-
-  if (tracks.length < 1) return;
-
-  for (let i = 0; i < tracks.length; i++) {
-    // Clone the object before modifying it
-    tracks[i] = { ...tracks[i] };
-
-    // Resolve the URLs
-    tracks[i].url = resolveImportedPath(tracks[i].url);
-    tracks[i].artwork = resolveImportedPath(tracks[i].artwork);
-  }
-
-  return TrackPlayer.add(tracks, insertBeforeIndex);
+  const resolvedTracks = (Array.isArray(tracks) ? tracks : [tracks]).map(
+    (track) => ({
+      ...track,
+      url: resolveImportedAssetOrPath(track.url),
+      artwork: resolveImportedAssetOrPath(track.artwork),
+    })
+  );
+  return resolvedTracks.length < 1
+    ? undefined
+    : TrackPlayer.add(resolvedTracks, insertBeforeIndex);
 }
 
 /**
@@ -218,32 +219,29 @@ export async function skipToPrevious(initialPosition = -1): Promise<void> {
  * Updates the configuration for the components.
  *
  * @param options The options to update.
- * @see https://react-native-track-player.js.org/docs/api/functions/player#updateoptionsoptions
+ * @see https://rntp.dev/docs/api/functions/player#updateoptionsoptions
  */
 export async function updateOptions({
   alwaysPauseOnInterruption,
   ...options
 }: UpdateOptions = {}): Promise<void> {
-  // Handle deprecated alwaysPauseOnInterruption option:
-  if (
-    alwaysPauseOnInterruption !== undefined &&
-    !(options.android && 'alwaysPauseOnInterruption' in options.android)
-  ) {
-    if (!options.android) options.android = {};
-    options.android.alwaysPauseOnInterruption = alwaysPauseOnInterruption;
-  }
-
-  // Resolve the asset for each icon
-  options.icon = resolveImportedPath(options.icon);
-  options.playIcon = resolveImportedPath(options.playIcon);
-  options.pauseIcon = resolveImportedPath(options.pauseIcon);
-  options.stopIcon = resolveImportedPath(options.stopIcon);
-  options.previousIcon = resolveImportedPath(options.previousIcon);
-  options.nextIcon = resolveImportedPath(options.nextIcon);
-  options.rewindIcon = resolveImportedPath(options.rewindIcon);
-  options.forwardIcon = resolveImportedPath(options.forwardIcon);
-
-  return TrackPlayer.updateOptions(options);
+  return TrackPlayer.updateOptions({
+    ...options,
+    android: {
+      // Handle deprecated alwaysPauseOnInterruption option:
+      alwaysPauseOnInterruption:
+        options.android?.alwaysPauseOnInterruption ?? alwaysPauseOnInterruption,
+      ...options.android,
+    },
+    icon: resolveImportedAsset(options.icon),
+    playIcon: resolveImportedAsset(options.playIcon),
+    pauseIcon: resolveImportedAsset(options.pauseIcon),
+    stopIcon: resolveImportedAsset(options.stopIcon),
+    previousIcon: resolveImportedAsset(options.previousIcon),
+    nextIcon: resolveImportedAsset(options.nextIcon),
+    rewindIcon: resolveImportedAsset(options.rewindIcon),
+    forwardIcon: resolveImportedAsset(options.forwardIcon),
+  });
 }
 
 /**
@@ -257,13 +255,10 @@ export async function updateMetadataForTrack(
   trackIndex: number,
   metadata: TrackMetadataBase
 ): Promise<void> {
-  // Clone the object before modifying it
-  metadata = Object.assign({}, metadata);
-
-  // Resolve the artwork URL
-  metadata.artwork = resolveImportedPath(metadata.artwork);
-
-  return TrackPlayer.updateMetadataForTrack(trackIndex, metadata);
+  return TrackPlayer.updateMetadataForTrack(trackIndex, {
+    ...metadata,
+    artwork: resolveImportedAssetOrPath(metadata.artwork),
+  });
 }
 
 /**
@@ -275,16 +270,17 @@ export function clearNowPlayingMetadata(): Promise<void> {
   return TrackPlayer.clearNowPlayingMetadata();
 }
 
+/**
+ * Updates the metadata content of the notification (Android) and the Now Playing Center (iOS)
+ * without affecting the data stored for the current track.
+ */
 export function updateNowPlayingMetadata(
   metadata: NowPlayingMetadata
 ): Promise<void> {
-  // Clone the object before modifying it
-  metadata = Object.assign({}, metadata);
-
-  // Resolve the artwork URL
-  metadata.artwork = resolveImportedPath(metadata.artwork);
-
-  return TrackPlayer.updateNowPlayingMetadata(metadata);
+  return TrackPlayer.updateNowPlayingMetadata({
+    ...metadata,
+    artwork: resolveImportedAssetOrPath(metadata.artwork),
+  });
 }
 
 // MARK: - Player API
@@ -376,7 +372,7 @@ export async function setRate(rate: number): Promise<void> {
  * Sets the queue.
  *
  * @param tracks The tracks to set as the queue.
- * @see https://react-native-track-player.js.org/docs/api/constants/repeat-mode
+ * @see https://rntp.dev/docs/api/constants/repeat-mode
  */
 export async function setQueue(tracks: Track[]): Promise<void> {
   return TrackPlayer.setQueue(tracks);
@@ -386,7 +382,7 @@ export async function setQueue(tracks: Track[]): Promise<void> {
  * Sets the queue repeat mode.
  *
  * @param repeatMode The repeat mode to set.
- * @see https://react-native-track-player.js.org/docs/api/constants/repeat-mode
+ * @see https://rntp.dev/docs/api/constants/repeat-mode
  */
 export async function setRepeatMode(mode: RepeatMode): Promise<RepeatMode> {
   return TrackPlayer.setRepeatMode(mode);
@@ -495,7 +491,7 @@ export async function getState(): Promise<State> {
 /**
  * Gets the playback state of the player.
  *
- * @see https://react-native-track-player.js.org/docs/api/constants/state
+ * @see https://rntp.dev/docs/api/constants/state
  */
 export async function getPlaybackState(): Promise<PlaybackState> {
   return TrackPlayer.getPlaybackState();
@@ -504,7 +500,7 @@ export async function getPlaybackState(): Promise<PlaybackState> {
 /**
  * Gets the queue repeat mode.
  *
- * @see https://react-native-track-player.js.org/docs/api/constants/repeat-mode
+ * @see https://rntp.dev/docs/api/constants/repeat-mode
  */
 export async function getRepeatMode(): Promise<RepeatMode> {
   return TrackPlayer.getRepeatMode();

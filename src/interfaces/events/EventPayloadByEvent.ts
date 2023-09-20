@@ -2,6 +2,7 @@ import { Event } from '../../constants';
 import { EqualizerSettings } from '../EqualizerSettings';
 import type { PlaybackState } from '../PlaybackState';
 import { SleepTimerChangedEvent } from '../SleepTimer';
+import type { AudioCommonMetadataReceivedEvent } from './AudioCommonMetadataReceivedEvent';
 import type { PlaybackActiveTrackChangedEvent } from './PlaybackActiveTrackChangedEvent';
 import type { PlaybackErrorEvent } from './PlaybackErrorEvent';
 import type { PlaybackMetadataReceivedEvent } from './PlaybackMetadataReceivedEvent';
@@ -46,4 +47,7 @@ export interface EventPayloadByEvent {
   [Event.RemoteBookmark]: never;
   [Event.SleepTimerChanged]: SleepTimerChangedEvent;
   [Event.SleepTimerComplete]: never;
+  [Event.MetadataChapterReceived]: AudioCommonMetadataReceivedEvent[];
+  [Event.MetadataTimedReceived]: AudioCommonMetadataReceivedEvent;
+  [Event.MetadataCommonReceived]: AudioCommonMetadataReceivedEvent[];
 }

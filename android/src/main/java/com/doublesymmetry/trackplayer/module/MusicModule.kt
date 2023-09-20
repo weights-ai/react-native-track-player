@@ -14,12 +14,12 @@ import com.doublesymmetry.trackplayer.model.Track
 import com.doublesymmetry.trackplayer.module.MusicEvents.Companion.EVENT_INTENT
 import com.doublesymmetry.trackplayer.service.MusicService
 import com.doublesymmetry.trackplayer.utils.AppForegroundTracker
-import com.doublesymmetry.trackplayer.utils.BundleUtils
 import com.doublesymmetry.trackplayer.utils.RejectionException
 import com.facebook.react.bridge.*
 import com.google.android.exoplayer2.DefaultLoadControl.*
 import com.google.android.exoplayer2.Player
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
@@ -291,7 +291,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
             callback.resolve(null)
             return@launch
         }
-        var bundle = Arguments.toBundle(data);
+        val bundle = Arguments.toBundle(data);
         if (bundle is Bundle) {
             musicService.load(bundleToTrack(bundle))
             callback.resolve(null)
@@ -313,7 +313,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
         val inputIndexes = Arguments.toList(data)
         if (inputIndexes != null) {
             val size = musicService.tracks.size
-            var indexes: ArrayList<Int> = ArrayList();
+            val indexes: ArrayList<Int> = ArrayList();
             for (inputIndex in inputIndexes) {
                 val index = if (inputIndex is Int) inputIndex else inputIndex.toString().toInt()
                 if (index < 0 || index >= size) {
@@ -355,12 +355,10 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
             callback.reject("no_current_item", "There is no current item in the player")
 
         val context: ReactContext = context
-        val metadata = Arguments.toBundle(map)
-        musicService.updateNotificationMetadata(
-            metadata?.getString("title"),
-            metadata?.getString("artist"),
-            BundleUtils.getUri(context, metadata, "artwork")?.toString()
-        )
+        Arguments.toBundle(map)?.let {
+            val track = bundleToTrack(it)
+            musicService.updateNowPlayingMetadata(track)
+        }
 
         callback.resolve(null)
     }
@@ -427,8 +425,10 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
     fun reset(callback: Promise) = scope.launch {
         if (verifyServiceBoundOrReject(callback)) return@launch
 
-        musicService.clear()
         musicService.stop()
+        delay(300) // Allow playback to stop
+        musicService.clear()
+
         callback.resolve(null)
     }
 

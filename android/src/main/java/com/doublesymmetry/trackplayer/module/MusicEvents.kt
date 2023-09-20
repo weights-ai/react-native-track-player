@@ -50,6 +50,14 @@ class MusicEvents(private val reactContext: ReactContext) : BroadcastReceiver() 
         const val SLEEP_TIMER_CHANGED = "sleep-timer-changed"
         const val SLEEP_TIMER_COMPLETE = "sleep-timer-complete"
 
+        // Metadata Events
+        const val METADATA_CHAPTER_RECEIVED = "metadata-chapter-received"
+        const val METADATA_TIMED_RECEIVED = "metadata-timed-received"
+        const val METADATA_COMMON_RECEIVED = "metadata-common-received"
+
+        // Other
+        const val PLAYER_ERROR = "player-error"
+
         const val EVENT_INTENT = "com.doublesymmetry.trackplayer.event"
     }
 }
