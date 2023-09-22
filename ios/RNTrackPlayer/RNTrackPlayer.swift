@@ -764,7 +764,7 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
         resolve(NSNull())
     }
 
-    @objc(getSleepTimerProgress:rejecter:)
+    @objc(getSleepTimer:rejecter:)
     public func getSleepTimer(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         if (rejectWhenNotInitialized(reject: reject)) { return }
         resolve(player.getSleepTimer())
