@@ -44,6 +44,8 @@ target 'RNTPExample' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  pod 'SwiftAudioEx', :git => 'https://github.com/puckey/SwiftAudioEx.git', :commit => '798745bb384ec9a6a4b618c263e1f8e546c6de6f'
+
   target 'RNTPExampleTests' do
     inherit! :complete
     # Pods for testing
