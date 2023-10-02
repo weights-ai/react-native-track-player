@@ -923,7 +923,7 @@ class MusicService : HeadlessJsTaskService() {
         const val NEXT_TRACK_KEY = "nextTrack"
         const val POSITION_KEY = "position"
         const val DURATION_KEY = "duration"
-        const val BUFFERED_POSITION_KEY = "buffer"
+        const val BUFFERED_POSITION_KEY = "buffered"
 
         const val TASK_KEY = "TrackPlayer"
 
