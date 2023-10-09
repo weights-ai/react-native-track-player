@@ -309,6 +309,8 @@ class MusicService : HeadlessJsTaskService() {
     @MainThread
     fun load(track: Track) {
         player.load(track.toAudioItem())
+        // RG Override: always play-when-ready when loading a track
+        player.play()
     }
 
     @MainThread

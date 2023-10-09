@@ -400,7 +400,8 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
             return
         }
 
-        player.load(item: track)
+        // RG override: setPlayWhenReady: true on every load call
+        player.load(item: track, playWhenReady: true)
         resolve(player.currentIndex)
     }
 
