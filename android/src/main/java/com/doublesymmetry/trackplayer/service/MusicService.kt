@@ -655,13 +655,16 @@ class MusicService : HeadlessJsTaskService() {
                 AudioPlayerState.IDLE,
                 AudioPlayerState.ENDED,
                 AudioPlayerState.STOPPED,
-                AudioPlayerState.ERROR,
+                // RG Override: Avoid notification closing when error, to allow retry:
+                // AudioPlayerState.ERROR,
                 AudioPlayerState.PAUSED
             )
             val REMOVABLE_STATES = listOf(
-                AudioPlayerState.IDLE,
-                AudioPlayerState.STOPPED,
-                AudioPlayerState.ERROR
+                AudioPlayerState.IDLE
+                // RG Override: We want to keep the notification when the player
+                // is stopped or has an error
+                // AudioPlayerState.STOPPED,
+                // AudioPlayerState.ERROR
             )
             val LOADING_STATES = listOf(
                 AudioPlayerState.LOADING,
