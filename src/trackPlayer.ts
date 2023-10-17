@@ -552,7 +552,7 @@ export async function retry() {
   return TrackPlayer.retry();
 }
 
-export async function getEqualizerSettings(): Promise<EqualizerSettings> {
+export async function getEqualizerSettings(): Promise<EqualizerSettings | null> {
   return TrackPlayer.getEqualizerSettings();
 }
 

@@ -393,29 +393,30 @@ class MusicService : HeadlessJsTaskService() {
     }
 
     @MainThread
-    fun getEqualizerSettings(): Bundle {
+    fun getEqualizerSettings(): Bundle? {
+        val equalizer = player.equalizer ?: return null
         return Bundle().apply{
             this.putIntArray(
                 "bandLevels",
-                player.equalizer.properties.bandLevels.map { it.toInt() }.toIntArray()
+                equalizer.properties.bandLevels.map { it.toInt() }.toIntArray()
             )
-            this.putInt("bandCount", player.equalizer.numberOfBands.toInt())
+            this.putInt("bandCount", equalizer.numberOfBands.toInt())
             this.putStringArray("presets", player.getEqualizerPresets())
-            val bandCount = player.equalizer.numberOfBands.toInt()
+            val bandCount = equalizer.numberOfBands.toInt()
             var centerBandFrequencies = Array(bandCount) {0}
             for (i in 0 until bandCount) {
-                centerBandFrequencies[i] = player.equalizer.getCenterFreq(i.toShort())
+                centerBandFrequencies[i] = equalizer.getCenterFreq(i.toShort())
             }
             this.putIntArray("centerBandFrequencies", centerBandFrequencies.toIntArray())
-            this.putInt("lowerBandLevelLimit", player.equalizer.bandLevelRange[0].toInt())
-            this.putInt("upperBandLevelLimit", player.equalizer.bandLevelRange[1].toInt())
-            if (player.equalizer.properties.curPreset >= 0) {
+            this.putInt("lowerBandLevelLimit", equalizer.bandLevelRange[0].toInt())
+            this.putInt("upperBandLevelLimit", equalizer.bandLevelRange[1].toInt())
+            if (equalizer.properties.curPreset >= 0) {
                 this.putString(
                     "activePreset",
-                    player.equalizer.getPresetName(player.equalizer.properties.curPreset)
+                    equalizer.getPresetName(equalizer.properties.curPreset)
                 )
             }
-            this.putBoolean("enabled", player.equalizer.enabled)
+            this.putBoolean("enabled", equalizer.enabled)
         }
     }
 

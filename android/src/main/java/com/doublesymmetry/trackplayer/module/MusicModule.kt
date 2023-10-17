@@ -659,7 +659,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
     @ReactMethod
     fun getEqualizerSettings(callback: Promise) = scope.launch {
         if (verifyServiceBoundOrReject(callback)) return@launch
-        callback.resolve(Arguments.fromBundle(musicService.getEqualizerSettings()))
+        val settings = musicService.getEqualizerSettings();
+        callback.resolve(if (settings == null) null else Arguments.fromBundle(settings))
     }
 
     @ReactMethod
