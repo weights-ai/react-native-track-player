@@ -2,7 +2,7 @@ import { Event } from '../../constants';
 import { EqualizerSettings } from '../EqualizerSettings';
 import type { PlaybackState } from '../PlaybackState';
 import { SleepTimerChangedEvent } from '../SleepTimer';
-import type { AudioCommonMetadataReceivedEvent } from './AudioCommonMetadataReceivedEvent';
+import type { AudioCommonMetadataReceivedEvent, AudioMetadataReceivedEvent } from './AudioMetadataReceivedEvent';
 import type { PlaybackActiveTrackChangedEvent } from './PlaybackActiveTrackChangedEvent';
 import type { PlaybackErrorEvent } from './PlaybackErrorEvent';
 import type { PlaybackMetadataReceivedEvent } from './PlaybackMetadataReceivedEvent';
@@ -49,9 +49,9 @@ export type EventPayloadByEvent = {
   [Event.RemoteBookmark]: never;
   [Event.SleepTimerChanged]: SleepTimerChangedEvent;
   [Event.SleepTimerComplete]: never;
-  [Event.MetadataChapterReceived]: AudioCommonMetadataReceivedEvent[];
-  [Event.MetadataTimedReceived]: AudioCommonMetadataReceivedEvent;
-  [Event.MetadataCommonReceived]: AudioCommonMetadataReceivedEvent[];
+  [Event.MetadataChapterReceived]: AudioMetadataReceivedEvent;
+  [Event.MetadataTimedReceived]: AudioMetadataReceivedEvent;
+  [Event.MetadataCommonReceived]: AudioCommonMetadataReceivedEvent;
 };
 
 // eslint-disable-next-line

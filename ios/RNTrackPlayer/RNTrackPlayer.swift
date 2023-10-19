@@ -295,18 +295,21 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
 
 
     private func configureAudioSession() {
-        var active = player.currentItem != nil && player.playWhenReady;
-        if (player.currentItem != nil) {
-            if (player.playWhenReady) {
-                try? audioSessionController.activateSession()
-            }
+        // deactivate the session when there is no current item to be played
+        if (player.currentItem == nil) {
+            try? audioSessionController.deactivateSession()
+            return
+        }
+
+        // activate the audio session when there is an item to be played
+        // and the player has been configured to start when it is ready loading:
+        if (player.playWhenReady) {
+            try? audioSessionController.activateSession()
             if #available(iOS 11.0, *) {
                 try? AVAudioSession.sharedInstance().setCategory(sessionCategory, mode: sessionCategoryMode, policy: sessionCategoryPolicy, options: sessionCategoryOptions)
             } else {
                 try? AVAudioSession.sharedInstance().setCategory(sessionCategory, mode: sessionCategoryMode, options: sessionCategoryOptions)
             }
-        } else {
-            try? audioSessionController.deactivateSession()
         }
     }
 
@@ -841,17 +844,17 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
 
     func handleAudioPlayerCommonMetadataReceived(metadata: [AVMetadataItem]) {
         let commonMetadata = MetadataAdapter.convertToCommonMetadata(metadata: metadata, skipRaw: true)
-        emit(event: EventType.MetadataCommonReceived, body: commonMetadata)
+        emit(event: EventType.MetadataCommonReceived, body: ["metadata": commonMetadata])
     }
 
     func handleAudioPlayerChapterMetadataReceived(metadata: [AVTimedMetadataGroup]) {
         let metadataItems = MetadataAdapter.convertToGroupedMetadata(metadataGroups: metadata);
-        emit(event: EventType.MetadataChapterReceived, body: metadataItems)
+        emit(event: EventType.MetadataChapterReceived, body:  ["metadata": metadataItems])
     }
 
     func handleAudioPlayerTimedMetadataReceived(metadata: [AVTimedMetadataGroup]) {
         let metadataItems = MetadataAdapter.convertToGroupedMetadata(metadataGroups: metadata);
-        emit(event: EventType.MetadataTimedReceived, body: metadataItems)
+        emit(event: EventType.MetadataTimedReceived, body: ["metadata": metadataItems])
 
         // SwiftAudioEx was updated to return the array of timed metadata
         // Until we have support for that in RNTP, we take the first item to keep existing behaviour.

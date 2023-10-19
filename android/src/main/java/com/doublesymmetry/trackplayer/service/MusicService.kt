@@ -27,6 +27,7 @@ import com.doublesymmetry.trackplayer.model.PlaybackMetadata
 import com.doublesymmetry.trackplayer.model.Track
 import com.doublesymmetry.trackplayer.model.TrackAudioItem
 import com.doublesymmetry.trackplayer.module.MusicEvents
+import com.doublesymmetry.trackplayer.module.MusicEvents.Companion.METADATA_PAYLOAD_KEY
 import com.doublesymmetry.trackplayer.utils.BundleUtils
 import com.doublesymmetry.trackplayer.utils.BundleUtils.setRating
 import com.facebook.react.HeadlessJsTaskService
@@ -65,6 +66,7 @@ class MusicService : HeadlessJsTaskService() {
     }
 
     private var appKilledPlaybackBehavior = AppKilledPlaybackBehavior.CONTINUE_PLAYBACK
+    private var stopForegroundGracePeriod: Int = DEFAULT_STOP_FOREGROUND_GRACE_PERIOD
 
     val tracks: List<Track>
         get() = player.items.map { (it as TrackAudioItem).track }
@@ -125,7 +127,7 @@ class MusicService : HeadlessJsTaskService() {
             .setCategory(Notification.CATEGORY_SERVICE)
             .setSmallIcon(ExoPlayerR.drawable.exo_notification_small_icon)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-           notificationBuilder.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+            notificationBuilder.foregroundServiceBehavior = NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
         }
         val notification = notificationBuilder.build()
         startForeground(EMPTY_NOTIFICATION_ID, notification)
@@ -177,7 +179,9 @@ class MusicService : HeadlessJsTaskService() {
 
         appKilledPlaybackBehavior = AppKilledPlaybackBehavior::string.find(androidOptions?.getString(APP_KILLED_PLAYBACK_BEHAVIOR_KEY)) ?: AppKilledPlaybackBehavior.CONTINUE_PLAYBACK
 
-        //TODO: This handles a deprecated flag. Should be removed soon.
+        BundleUtils.getIntOrNull(androidOptions, STOP_FOREGROUND_GRACE_PERIOD_KEY)?.let { stopForegroundGracePeriod = it }
+
+        // TODO: This handles a deprecated flag. Should be removed soon.
         options.getBoolean(STOPPING_APP_PAUSES_PLAYBACK_KEY).let {
             stoppingAppPausesPlayback = options.getBoolean(STOPPING_APP_PAUSES_PLAYBACK_KEY)
             if (stoppingAppPausesPlayback) {
@@ -245,23 +249,23 @@ class MusicService : HeadlessJsTaskService() {
 
         // setup progress update events if configured
         progressUpdateJob?.cancel()
-        val updateInterval = BundleUtils.getIntOrNull(options, PROGRESS_UPDATE_EVENT_INTERVAL_KEY)
+        val updateInterval = BundleUtils.getDoubleOrNull(options, PROGRESS_UPDATE_EVENT_INTERVAL_KEY)
         if (updateInterval != null && updateInterval > 0) {
             progressUpdateJob = scope.launch {
-                progressUpdateEventFlow(updateInterval.toLong()).collect { emit(MusicEvents.PLAYBACK_PROGRESS_UPDATED, it) }
+                progressUpdateEventFlow(updateInterval).collect { emit(MusicEvents.PLAYBACK_PROGRESS_UPDATED, it) }
             }
         }
     }
 
     @MainThread
-    private fun progressUpdateEventFlow(interval: Long) = flow {
+    private fun progressUpdateEventFlow(interval: Double) = flow {
         while (true) {
             if (player.isPlaying) {
                 val bundle = progressUpdateEvent()
                 emit(bundle)
             }
 
-            delay(interval * 1000)
+            delay((interval * 1000).toLong())
         }
     }
 
@@ -683,6 +687,10 @@ class MusicService : HeadlessJsTaskService() {
             }
         }
 
+        fun shouldStopForeground(): Boolean {
+            return stopForegroundWhenNotOngoing && (removeNotificationWhenNotOngoing || isForegroundService())
+        }
+
         scope.launch {
             event.notificationStateChange.collect {
                 when (it) {
@@ -694,11 +702,19 @@ class MusicService : HeadlessJsTaskService() {
                             if (player.playWhenReady) {
                                 startForegroundIfNecessary()
                             }
-                        } else if (stopForegroundWhenNotOngoing) {
-                            if (removeNotificationWhenNotOngoing || isForegroundService()) {
-                                @Suppress("DEPRECATION")
-                                stopForeground(removeNotificationWhenNotOngoing)
-                                Timber.d("stopped foregrounding%s", if (removeNotificationWhenNotOngoing) " and removed notification" else "")
+                        } else if (shouldStopForeground()) {
+                            // Allow the application a grace period to complete any actions
+                            // that may necessitate keeping the service in a foreground state.
+                            // For instance, queuing new media (e.g., related music) after the
+                            // user's queue is complete. This prevents the service from potentially
+                            // being immediately destroyed once the player finishes playing media.
+                            scope.launch {
+                                delay(stopForegroundGracePeriod.toLong() * 1000)
+                                if (shouldStopForeground()) {
+                                    @Suppress("DEPRECATION")
+                                    stopForeground(true)
+                                    Timber.d("Notification has been stopped")
+                                }
                             }
                         }
                     }
@@ -716,7 +732,6 @@ class MusicService : HeadlessJsTaskService() {
 
                 if (it == AudioPlayerState.ENDED && player.nextItem == null) {
                     emitQueueEndedEvent()
-                    emitPlaybackTrackChangedEvents(null, player.currentIndex, player.position.toSeconds())
                 }
             }
         }
@@ -785,7 +800,10 @@ class MusicService : HeadlessJsTaskService() {
         scope.launch {
             event.onTimedMetadata.collect {
                 val data = MetadataAdapter.fromMetadata(it)
-                emitList(MusicEvents.METADATA_TIMED_RECEIVED, data)
+                val bundle = Bundle().apply {
+                    putParcelableArrayList(METADATA_PAYLOAD_KEY, ArrayList(data))
+                }
+                emit(MusicEvents.METADATA_TIMED_RECEIVED, bundle)
 
                 // TODO: Handle the different types of metadata and publish to new events
                 val metadata = PlaybackMetadata.fromId3Metadata(it)
@@ -811,7 +829,10 @@ class MusicService : HeadlessJsTaskService() {
         scope.launch {
             event.onCommonMetadata.collect {
                 val data = MetadataAdapter.fromMediaMetadata(it)
-                emit(MusicEvents.METADATA_COMMON_RECEIVED, data)
+                val bundle = Bundle().apply {
+                    putBundle(METADATA_PAYLOAD_KEY, data)
+                }
+                emit(MusicEvents.METADATA_COMMON_RECEIVED, bundle)
             }
         }
 
@@ -948,6 +969,7 @@ class MusicService : HeadlessJsTaskService() {
 
         const val STOPPING_APP_PAUSES_PLAYBACK_KEY = "stoppingAppPausesPlayback"
         const val APP_KILLED_PLAYBACK_BEHAVIOR_KEY = "appKilledPlaybackBehavior"
+        const val STOP_FOREGROUND_GRACE_PERIOD_KEY = "stopForegroundGracePeriod"
         const val PAUSE_ON_INTERRUPTION_KEY = "alwaysPauseOnInterruption"
         const val AUTO_UPDATE_METADATA = "autoUpdateMetadata"
         const val AUTO_HANDLE_INTERRUPTIONS = "autoHandleInterruptions"
@@ -956,5 +978,6 @@ class MusicService : HeadlessJsTaskService() {
         const val IS_PAUSED_KEY = "paused"
 
         const val DEFAULT_JUMP_INTERVAL = 15.0
+        const val DEFAULT_STOP_FOREGROUND_GRACE_PERIOD = 5
     }
 }
