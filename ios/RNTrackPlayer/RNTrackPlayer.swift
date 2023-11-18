@@ -15,6 +15,7 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
 
     // MARK: - Attributes
 
+    private var airPlayVolumeView: MPVolumeView?
     private var hasInitialized = false
     private let player = QueuedAudioPlayer()
     private let audioSessionController = AudioSessionController.shared
@@ -311,6 +312,26 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
                 try? AVAudioSession.sharedInstance().setCategory(sessionCategory, mode: sessionCategoryMode, options: sessionCategoryOptions)
             }
         }
+    }
+
+    @objc(showAirPlayPicker:rejecter:)
+    func showAirPlayPicker(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            if self.airPlayVolumeView == nil {
+                self.airPlayVolumeView = MPVolumeView(
+                    frame: CGRect(x: -1000, y: -1000, width: 0, height: 0)
+                )
+                self.airPlayVolumeView?.isHidden = true
+                UIApplication.shared.keyWindow?.addSubview(self.airPlayVolumeView!)
+            }
+            for view in self.airPlayVolumeView!.subviews {
+              if let button = view as? UIButton {
+                button.sendActions(for: .touchUpInside)
+                break
+              }
+            }
+        }
+        resolve(nil);
     }
 
     @objc(isServiceRunning:rejecter:)

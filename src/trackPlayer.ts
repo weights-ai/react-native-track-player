@@ -567,3 +567,7 @@ export async function setEqualizerPreset(preset: string): Promise<void> {
 export async function setEqualizerLevels(levels: number[]): Promise<void> {
   return TrackPlayer.setEqualizerLevels(levels);
 }
+
+export async function showAirPlayPicker(): Promise<void> {
+  return TrackPlayer.showAirPlayPicker();
+}
