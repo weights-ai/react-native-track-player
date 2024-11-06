@@ -14,7 +14,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'example' do
+target 'RNTPExample' do
   config = use_native_modules!
 
   use_react_native!(
@@ -23,18 +23,19 @@ target 'example' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'exampleTests' do
+  target 'RNTPExampleTests' do
     inherit! :complete
     # Pods for testing
   end
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
+

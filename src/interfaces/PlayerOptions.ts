@@ -84,6 +84,28 @@ export interface PlayerOptions {
    */
   androidAudioContentType?: AndroidAudioContentType;
   /**
+   * auto pause playback when playback device changes from headset to speaker.
+   * @default true
+   */
+  androidHandleAudioBecomingNoisy?: boolean;
+  /**
+   * always show next and previous as android player command. this overrides
+   * exoplayer disabling the next button on playmode != all and at queue's end.
+   * @default true
+   */
+  androidAlwaysShowNext?: boolean;
+  /**
+   * enables exoplayer's skipSilence parser
+   * @default false
+   */
+  androidSkipSilence?: boolean;
+  /**
+   * set android exoplayer wake mode. 1 is WAKE_MODE_LOCAL, 2 is WAKE_MODE_NETWORK,
+   * and others is WAKE_MODE_NONE.
+   * @default 0
+   */
+  androidWakeMode?: number;
+  /**
    * Indicates whether the player should automatically delay playback in order to minimize stalling.
    * Defaults to `true`.
    * @deprecated This option has been nominated for removal in a future version
@@ -103,4 +125,9 @@ export interface PlayerOptions {
    * Defaults to `false`.
    */
   autoHandleInterruptions?: boolean;
+  /**
+   * enables crossfade. android only.
+   * Defaults to `false`.
+   */
+  crossfade?: boolean;
 }

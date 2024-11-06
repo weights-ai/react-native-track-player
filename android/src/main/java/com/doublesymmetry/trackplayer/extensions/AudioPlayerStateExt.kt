@@ -1,6 +1,6 @@
 package com.doublesymmetry.trackplayer.extensions
 
-import com.doublesymmetry.kotlinaudio.models.AudioPlayerState
+import com.lovegaoshi.kotlinaudio.models.AudioPlayerState
 import com.doublesymmetry.trackplayer.model.State
 
 val AudioPlayerState.asLibState: State

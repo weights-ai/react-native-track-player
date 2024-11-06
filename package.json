@@ -98,7 +98,6 @@
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.23.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "husky": "^8.0.0",
     "prettier": "^2.7.1",
     "react": "17.0.2",
     "react-native": "0.68.5",
@@ -118,5 +117,5 @@
       "classic.yarnpkg.com": "^1"
     }
   },
-  "packageManager": "yarn@4.5.0+sha512.837566d24eec14ec0f5f1411adb544e892b3454255e61fdef8fd05f3429480102806bac7446bc9daff3896b01ae4b62d00096c7e989f1596f2af10b927532f39"
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

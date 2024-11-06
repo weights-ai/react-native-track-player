@@ -1,6 +1,12 @@
 import Foundation
 
 enum EventType: String, CaseIterable {
+    case RemotePlayPause = "remote-play-pause"
+    case RemotePlayId = "remote-play-id"
+    case RemotePlaySearch = "remote-play-search"
+    case RemoteBrowse = "remote-browse"
+    case RemoteCustomAction = "remote-custom-action"
+
     case RemoteDuck = "remote-duck"
     case RemoteSeek = "remote-seek"
     case RemoteNext = "remote-next"

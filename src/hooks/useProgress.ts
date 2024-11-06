@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { getProgress } from '../trackPlayer';
 import { Event } from '../constants';
 import type { Progress } from '../interfaces';
+import { getProgress } from '../trackPlayer';
 import { useTrackPlayerEvents } from './useTrackPlayerEvents';
 
 const INITIAL_STATE = {

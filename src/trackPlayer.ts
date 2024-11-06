@@ -3,10 +3,11 @@ import {
   DeviceEventEmitter,
   NativeEventEmitter,
   Platform,
+  Animated,
 } from 'react-native';
 
+import { Event, RepeatMode, State, AndroidAutoContentStyle } from './constants';
 import TrackPlayer from './TrackPlayerModule';
-import { Event, RepeatMode, State } from './constants';
 import type {
   AddTrack,
   EventPayloadByEvent,
@@ -18,13 +19,19 @@ import type {
   Track,
   TrackMetadataBase,
   UpdateOptions,
+  AndroidAutoBrowseTree,
 } from './interfaces';
 import resolveAssetSource from './resolveAssetSource';
 
-const emitter =
-  Platform.OS !== 'android'
-    ? new NativeEventEmitter(TrackPlayer)
-    : DeviceEventEmitter;
+const isAndroid = Platform.OS === 'android';
+
+const emitter = !isAndroid
+  ? new NativeEventEmitter(TrackPlayer)
+  : DeviceEventEmitter;
+
+const animatedVolume = new Animated.Value(1);
+
+animatedVolume.addListener((state) => TrackPlayer.setVolume(state.value));
 
 // MARK: - Helpers
 
@@ -55,15 +62,20 @@ function resolveImportedAsset(id?: number) {
  * @param options The options to initialize the player with.
  * @see https://rntp.dev/docs/api/functions/lifecycle
  */
-export async function setupPlayer(options: PlayerOptions = {}): Promise<void> {
-  return TrackPlayer.setupPlayer(options);
+export async function setupPlayer(
+  options: PlayerOptions = {},
+  background = false
+): Promise<void> {
+  return isAndroid
+    ? TrackPlayer.setupPlayer(options, background)
+    : TrackPlayer.setupPlayer(options);
 }
 
 /**
  * Register the playback service. The service will run as long as the player runs.
  */
 export function registerPlaybackService(factory: () => ServiceHandler) {
-  if (Platform.OS === 'android') {
+  if (isAndroid) {
     // Registers the headless task
     AppRegistry.registerHeadlessTask('TrackPlayer', factory);
   } else if (Platform.OS === 'web') {
@@ -237,8 +249,8 @@ export async function updateOptions({
     stopIcon: resolveImportedAsset(options.stopIcon),
     previousIcon: resolveImportedAsset(options.previousIcon),
     nextIcon: resolveImportedAsset(options.nextIcon),
-    rewindIcon: resolveImportedAsset(options.rewindIcon),
-    forwardIcon: resolveImportedAsset(options.forwardIcon),
+    // rewindIcon: resolveImportedAsset(options.rewindIcon),
+    // forwardIcon: resolveImportedAsset(options.forwardIcon),
   });
 }
 
@@ -356,6 +368,176 @@ export async function setVolume(level: number): Promise<void> {
   return TrackPlayer.setVolume(level);
 }
 
+/**
+ * Sets the volume of the player with a simple linear scaling.
+ * In Android this is achieved via a native thread call.
+ * In other platforms this is achieved via RN's Animated.Value.
+ *
+ * @param volume The volume as a number between 0 and 1.
+ * @param duration The duration of the animation in milliseconds. defualt is 0 ms, which just functions as TP.setVolume.
+ * @param init The initial value of the volume. This may be useful eg to be 0 for a fade in event.
+ * @param interval The interval of the animation in milliseconds. default is 20 ms.
+ * @param msg (Android) The message to be emitted after volume is fully changed, via Event.PlaybackAnimatedVolumeChanged.
+ * @param callback (other platforms) The callback to be called after volume is fully changed.
+ */
+export const setAnimatedVolume = async ({
+  volume,
+  duration = 0,
+  init = -1,
+  interval = 20,
+  msg = '',
+  callback = () => undefined,
+}: {
+  volume: number;
+  duration?: number;
+  init?: number;
+  interval?: number;
+  msg?: string;
+  callback?: () => void | Promise<void>;
+}) => {
+  if (duration === 0) {
+    TrackPlayer.setVolume(volume);
+    return callback();
+  }
+  if (init !== -1) {
+    TrackPlayer.setVolume(init);
+  }
+  if (isAndroid) {
+    return TrackPlayer.setAnimatedVolume(volume, duration, interval, msg);
+  } else {
+    /*
+    TODO: Animated.value change relies on React rendering so Android
+    headlessJS will not work with it. however does iOS and windows work in the background?
+    if not this code block is needed 
+    if (AppState.currentState !== 'active') {
+      // need to figure out a way to run Animated.timing in background. probably needs our own module
+      duration = 0;
+    }
+    */
+    volume = Math.min(volume, 1);
+    if (duration === 0) {
+      animatedVolume.setValue(volume);
+      callback();
+      return;
+    }
+    animatedVolume.stopAnimation();
+    Animated.timing(animatedVolume, {
+      toValue: volume,
+      useNativeDriver: true,
+      duration,
+    }).start(() => callback());
+  }
+};
+
+/**
+ * performs fading out to pause playback.
+ * @param duration duration of the fade progress in ms
+ * @param interval interval of the fade progress in ms
+ */
+export const fadeOutPause = async (duration = 500, interval = 20) => {
+  if (isAndroid) {
+    TrackPlayer.fadeOutPause(duration, interval);
+  } else {
+    setAnimatedVolume({
+      duration,
+      interval,
+      volume: 0,
+      callback: () => pause(),
+    });
+  }
+};
+
+/**
+ * performs fading into playing the next track.
+ * @param duration duration of the fade progress in ms
+ * @param interval interval of the fade progress in ms
+ * @param toVolume volume to fade into
+ */
+export const fadeOutNext = async (
+  duration = 500,
+  interval = 20,
+  toVolume = 1
+) => {
+  if (isAndroid) {
+    TrackPlayer.fadeOutNext(duration, interval, toVolume);
+  } else {
+    setAnimatedVolume({
+      duration,
+      interval,
+      volume: 0,
+      callback: async () => {
+        await skipToNext();
+        setAnimatedVolume({
+          duration,
+          interval,
+          volume: toVolume,
+        });
+      },
+    });
+  }
+};
+
+/**
+ * performs fading into playing the previous track.
+ * @param duration duration of the fade progress in ms
+ * @param interval interval of the fade progress in ms
+ * @param toVolume volume to fade into
+ */
+export const fadeOutPrevious = async (
+  duration = 500,
+  interval = 20,
+  toVolume = 1
+) => {
+  if (isAndroid) {
+    TrackPlayer.fadeOutPrevious(duration, interval, toVolume);
+  } else {
+    setAnimatedVolume({
+      duration,
+      interval,
+      volume: 0,
+      callback: async () => {
+        await skipToPrevious();
+        setAnimatedVolume({
+          duration,
+          interval,
+          volume: toVolume,
+        });
+      },
+    });
+  }
+};
+
+/**
+ * performs fading into skipping to a track.
+ * @param index the index of the track to skip to
+ * @param duration duration of the fade progress in ms
+ * @param interval interval of the fade progress in ms
+ * @param toVolume volume to fade into
+ */
+export const fadeOutJump = async (
+  index: number,
+  duration = 500,
+  interval = 20,
+  toVolume = 1
+) => {
+  if (isAndroid) {
+    TrackPlayer.fadeOutJump(index, duration, interval, toVolume);
+  } else {
+    setAnimatedVolume({
+      duration,
+      interval,
+      volume: 0,
+      callback: async () => {
+        await skip(index);
+        setAnimatedVolume({
+          duration,
+          interval,
+          volume: toVolume,
+        });
+      },
+    });
+  }
+};
 /**
  * Sets the playback rate.
  *
@@ -509,4 +691,88 @@ export async function getRepeatMode(): Promise<RepeatMode> {
  */
 export async function retry() {
   return TrackPlayer.retry();
+}
+
+/**
+ * Sets the content hierarchy of Android Auto (Android only). The hierarchy structure is a dict with
+ * the mediaId as keys, and a list of MediaItem as values. To use, you must at least specify the root directory, where
+ * the key is "/". If the root directory contains BROWSABLE MediaItems, they will be shown as tabs. Do note Google requires
+ * AA to have a max of 4 tabs. You may then set the mediaId keys of the browsable MediaItems to be a list of other MediaItems.
+ *
+ * @param browseTree the content hierarchy dict.
+ * @returns a serialized copy of the browseTree set by native. For debug purposes.
+ */
+export async function setBrowseTree(
+  browseTree: AndroidAutoBrowseTree
+): Promise<string> {
+  if (!isAndroid) return new Promise(() => '');
+  return TrackPlayer.setBrowseTree(browseTree);
+}
+
+/**
+ * this method enables android auto playback progress tracking; see
+ * https://developer.android.com/training/cars/media#browse-progress-bar
+ * android only.
+ * @param mediaID the mediaID.
+ * @returns
+ */
+export async function setPlaybackState(mediaID: string): Promise<void> {
+  if (!isAndroid) return;
+  TrackPlayer.setPlaybackState(mediaID);
+}
+
+/**
+ * Sets the content style of Android Auto (Android only).
+ * there are list style and grid style. see https://developer.android.com/training/cars/media#apply_content_style .
+ * the styles are applicable to browsable nodes and playable nodes. setting the args to true will yield the list style.
+ * false = the grid style.
+ */
+export function setBrowseTreeStyle(
+  browsableStyle: AndroidAutoContentStyle,
+  playableStyle: AndroidAutoContentStyle
+): null {
+  if (!isAndroid) return null;
+  TrackPlayer.setBrowseTreeStyle(browsableStyle, playableStyle);
+  return null;
+}
+
+/**
+ * acquires the wake lock of MusicService (android only.)
+ */
+export async function acquireWakeLock() {
+  if (!isAndroid) return;
+  TrackPlayer.acquireWakeLock();
+}
+
+/**
+ * acquires the wake lock of MusicService (android only.)
+ */
+export async function abandonWakeLock() {
+  if (!isAndroid) return;
+  TrackPlayer.abandonWakeLock();
+}
+
+/**
+ * prepare to crossfade (android only.) the crossfade alternate
+ * player will be automatically primed to the current player's index,
+ * then by previous = true or not, skip to previous or next. player
+ * will be prepared. its advised to call this well before actually performing
+ * crossfade so the resource can be prepared.
+ */
+export async function crossFadePrepare(previous = false) {
+  if (!isAndroid) return;
+  TrackPlayer.crossFadePrepare(previous);
+}
+
+/**
+ * perform crossfade (android only). fadeDuration and fadeInterval are both in ms.
+ * fadeToVolume is a float from 0-1.
+ */
+export async function crossFade(
+  fadeDuration = 2000,
+  fadeInterval = 20,
+  fadeToVolume = 1
+) {
+  if (!isAndroid) return;
+  TrackPlayer.switchExoPlayer(fadeDuration, fadeInterval, fadeToVolume);
 }

@@ -6,8 +6,14 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import { PlaybackError } from './PlaybackError';
 import { PlayPauseButton } from './PlayPauseButton';
 
-const performSkipToNext = () => TrackPlayer.skipToNext();
-const performSkipToPrevious = () => TrackPlayer.skipToPrevious();
+const performSkipToNext = () => {
+  console.log('performSkipToNext');
+  TrackPlayer.skipToNext();
+}
+const performSkipToPrevious = () => {
+  console.log('performSkipToPrevious');
+  TrackPlayer.skipToPrevious();
+}
 
 export const PlayerControls: React.FC = () => {
   const playback = usePlaybackState();

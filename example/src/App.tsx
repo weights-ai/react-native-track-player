@@ -1,61 +1,56 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Linking,
+  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  Text,
   View,
-  Platform,
 } from 'react-native';
-import TrackPlayer, { useActiveTrack } from 'react-native-track-player';
+import TrackPlayer, {
+  AndroidAutoContentStyle,
+  useActiveTrack,
+} from 'react-native-track-player';
 
-import {
-  Button,
-  OptionSheet,
-  ActionSheet,
-  PlayerControls,
-  Progress,
-  Spacer,
-  TrackInfo,
-} from './components';
-import { QueueInitialTracksService, SetupService } from './services';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet from '@gorhom/bottom-sheet';
+import { PlayerControls, Progress, Spacer, TrackInfo } from './components';
 import { SponsorCard } from './components/SponsorCard';
-
+import { QueueInitialTracksService, SetupService } from './services';
+import DemoAndroidAutoHierarchy from './services/AndroidAutoHierarchy';
+const useHook = (interval = 1000) => {
+  const [myNum, setMyNum] = React.useState(0);
+  const update = () => setMyNum((v) => v + 1);
+  React.useEffect(() => {
+    let mounted = true;
+    const awaitUpdate = async () => {
+      if (!mounted) {
+        return;
+      }
+      console.log('hook update', myNum);
+      update();
+      await new Promise<void>((resolve) => setTimeout(resolve, interval));
+      if (!mounted) {
+        return;
+      }
+      awaitUpdate();
+    };
+    awaitUpdate();
+    return () => {
+      mounted = false;
+    };
+  }, [interval]);
+  return myNum;
+};
 export default function App() {
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Inner />
-    </GestureHandlerRootView>
-  );
+  return <Inner />;
 }
 
 const Inner: React.FC = () => {
   const track = useActiveTrack();
   const isPlayerReady = useSetupPlayer();
-
-  // options bottom sheet
-  const optionsSheetRef = useRef<BottomSheet>(null);
-  const optionsSheetSnapPoints = useMemo(() => ['40%'], []);
-  const handleOptionsPress = useCallback(() => {
-    optionsSheetRef.current?.snapToIndex(0);
-  }, [optionsSheetRef]);
-
-  // actions bottom sheet
-  const actionsSheetRef = useRef<BottomSheet>(null);
-  const actionsSheetSnapPoints = useMemo(() => ['40%'], []);
-  const handleActionsPress = useCallback(() => {
-    actionsSheetRef.current?.snapToIndex(0);
-  }, [actionsSheetRef]);
-
+  const num = useHook();
+  console.log({ num })
   useEffect(() => {
     function deepLinkHandler(data: { url: string }) {
       console.log('deepLinkHandler', data.url);
@@ -83,11 +78,8 @@ const Inner: React.FC = () => {
   return (
     <SafeAreaView style={styles.screenContainer}>
       <StatusBar barStyle={'light-content'} />
+      <Text style={{color: 'white'}}>{num}</Text>
       <View style={styles.contentContainer}>
-        <View style={styles.topBarContainer}>
-          <Button title="Options" onPress={handleOptionsPress} type="primary" />
-          <Button title="Actions" onPress={handleActionsPress} type="primary" />
-        </View>
         <TrackInfo track={track} />
         <Progress live={track?.isLiveStream} />
         <Spacer />
@@ -95,26 +87,6 @@ const Inner: React.FC = () => {
         <Spacer mode={'expand'} />
         <SponsorCard />
       </View>
-      <BottomSheet
-        index={-1}
-        ref={optionsSheetRef}
-        enablePanDownToClose={true}
-        snapPoints={optionsSheetSnapPoints}
-        handleIndicatorStyle={styles.sheetHandle}
-        backgroundStyle={styles.sheetBackgroundContainer}
-      >
-        <OptionSheet />
-      </BottomSheet>
-      <BottomSheet
-        index={-1}
-        ref={actionsSheetRef}
-        enablePanDownToClose={true}
-        snapPoints={actionsSheetSnapPoints}
-        handleIndicatorStyle={styles.sheetHandle}
-        backgroundStyle={styles.sheetBackgroundContainer}
-      >
-        <ActionSheet />
-      </BottomSheet>
     </SafeAreaView>
   );
 };
@@ -151,6 +123,11 @@ function useSetupPlayer() {
     let unmounted = false;
     (async () => {
       await SetupService();
+      TrackPlayer.setBrowseTree(DemoAndroidAutoHierarchy);
+      TrackPlayer.setBrowseTreeStyle(
+        AndroidAutoContentStyle.CategoryList,
+        AndroidAutoContentStyle.Grid
+      );
       if (unmounted) return;
       setPlayerReady(true);
       const queue = await TrackPlayer.getQueue();

@@ -1,6 +1,7 @@
 import TrackPlayer, {
   AppKilledPlaybackBehavior,
   Capability,
+  type PlayerOptions,
   RepeatMode,
 } from 'react-native-track-player';
 
@@ -9,11 +10,12 @@ export const DefaultAudioServiceBehaviour =
   AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification;
 
 const setupPlayer = async (
-  options: Parameters<typeof TrackPlayer.setupPlayer>[0]
+  options: PlayerOptions,
+  background = false
 ) => {
   const setup = async () => {
     try {
-      await TrackPlayer.setupPlayer(options);
+      await TrackPlayer.setupPlayer(options, background);
     } catch (error) {
       return (error as Error & { code?: string }).code;
     }
@@ -25,14 +27,20 @@ const setupPlayer = async (
     await new Promise<void>((resolve) => setTimeout(resolve, 1));
   }
 };
-
-export const SetupService = async () => {
-  await setupPlayer({
-    autoHandleInterruptions: true,
-  });
+let arr = false;
+export const SetupService = async (background = false) => {
+  if (arr) return;
+  arr = true;
+  await setupPlayer(
+    {
+      autoHandleInterruptions: true,
+    },
+    background
+  );
   await TrackPlayer.updateOptions({
     android: {
       appKilledPlaybackBehavior: DefaultAudioServiceBehaviour,
+      stopForegroundGracePeriod: 999999999,
     },
     // This flag is now deprecated. Please use the above to define playback mode.
     // stoppingAppPausesPlayback: true,
@@ -42,11 +50,18 @@ export const SetupService = async () => {
       Capability.SkipToNext,
       Capability.SkipToPrevious,
       Capability.SeekTo,
+      Capability.JumpBackward,
     ],
     compactCapabilities: [
       Capability.Play,
       Capability.Pause,
-      Capability.SkipToNext,
+      // Capability.SkipToNext,
+    ],
+    notificationCapabilities: [
+      Capability.Play,
+      Capability.Pause,
+      Capability.SeekTo,
+      Capability.JumpBackward,
     ],
     progressUpdateEventInterval: 2,
   });
