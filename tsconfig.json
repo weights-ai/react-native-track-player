@@ -8,7 +8,7 @@
     "jsx": "react-native",
     "lib": ["es2017", "DOM", "DOM.Iterable"],
     "moduleResolution": "node",
-    "outDir": "./lib",
+    "outDir": "lib",
     "strict": true,
     "target": "esnext",
     "module": "esnext",
