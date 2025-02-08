@@ -11,10 +11,8 @@ export interface Track extends TrackMetadataBase {
   contentType?: string;
   /** (iOS only) The pitch algorithm to apply to the sound. */
   pitchAlgorithm?: PitchAlgorithm;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  headers?: { [key: string]: any };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  headers?: Record<string, string>;
+  [key: string]: unknown;
 }
 
 export type AddTrack = Track & {
