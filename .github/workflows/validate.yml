@@ -84,14 +84,14 @@ jobs:
         if: ${{ needs.check-changes.outputs.should-build-ios }}
         uses: actions/checkout@v4
       - name: Setup Environment
-        uses: pkgxdev/setup@v2
+        uses: pkgxdev/setup@v3
         with:
           +: ruby-lang.org@3.1.0
-            classic.yarnpkg.com
+            yarn@4
             tuist.io/xcbeautify
       - name: Install Library Dependencies
         if: ${{ needs.check-changes.outputs.should-build-ios }}
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Build Library
         if: ${{ needs.check-changes.outputs.should-build-ios }}
         run: yarn build
@@ -99,7 +99,7 @@ jobs:
         if: ${{ needs.check-changes.outputs.should-build-ios }}
         run: |-
           cd example
-          yarn install --frozen-lockfile
+          yarn install --immutable
       - name: Bundle Install
         if: ${{ needs.check-changes.outputs.should-build-ios }}
         run: |-
@@ -133,12 +133,12 @@ jobs:
         if: ${{ needs.check-changes.outputs.should-build-android }}
         uses: actions/checkout@v4
       - name: Setup Environment
-        uses: pkgxdev/setup@v2
+        uses: pkgxdev/setup@v3
         with:
-          +: classic.yarnpkg.com
+          +: yarn@4
       - name: Install Library Dependencies
         if: ${{ needs.check-changes.outputs.should-build-android }}
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Build Library
         if: ${{ needs.check-changes.outputs.should-build-android }}
         run: yarn build
@@ -179,11 +179,11 @@ jobs:
       - name: Setup Environment
         uses: pkgxdev/setup@v2
         with:
-          +: classic.yarnpkg.com
+          +: yarn@4
       - name: Install Dependencies
         if: ${{ needs.check-changes.outputs.should-build-docs }}
         run: |-
-          yarn install --frozen-lockfile
+          yarn install --immutable
       - name: Build Docs
         if: ${{ needs.check-changes.outputs.should-build-docs }}
         run: |-
