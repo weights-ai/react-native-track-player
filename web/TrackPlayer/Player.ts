@@ -3,11 +3,11 @@ import type { Track, Progress, PlaybackState } from '../../src/interfaces';
 import { SetupNotCalledError } from './SetupNotCalledError';
 
 export class Player {
-  protected hasInitialized: boolean = false;
+  protected hasInitialized = false;
   protected element?: HTMLMediaElement;
   protected player?: shaka.Player;
   protected _current?: Track = undefined;
-  protected _playWhenReady: boolean = false;
+  protected _playWhenReady = false;
   protected _state: PlaybackState = { state: State.None };
 
   // current getter/setter
@@ -39,10 +39,12 @@ export class Player {
     if (typeof window === 'undefined') return;
     if (this.hasInitialized === true) {
       // TODO: double check the structure of this error message
-      throw { code: 'player_already_initialized', message: 'The player is not initialized. Call setupPlayer first.' };
+      throw {
+        code: 'player_already_initialized',
+        message: 'The player is not initialized. Call setupPlayer first.',
+      };
     }
 
-    // @ts-ignore
     const shaka = await import('shaka-player/dist/shaka-player.ui');
     // Install built-in polyfills to patch browser incompatibilities.
     shaka.polyfill.installAll();
@@ -70,11 +72,26 @@ export class Player {
       // Extract the shaka.util.Error object from the event.
       this.onError(error.detail);
     });
-    this.element.addEventListener('ended', this.onStateUpdate.bind(this, State.Ended));
-    this.element.addEventListener('playing', this.onStateUpdate.bind(this, State.Playing));
-    this.element.addEventListener('pause', this.onStateUpdate.bind(this, State.Paused));
-    this.player!.addEventListener('loading', this.onStateUpdate.bind(this, State.Loading));
-    this.player!.addEventListener('loaded', this.onStateUpdate.bind(this, State.Ready));
+    this.element.addEventListener(
+      'ended',
+      this.onStateUpdate.bind(this, State.Ended)
+    );
+    this.element.addEventListener(
+      'playing',
+      this.onStateUpdate.bind(this, State.Playing)
+    );
+    this.element.addEventListener(
+      'pause',
+      this.onStateUpdate.bind(this, State.Paused)
+    );
+    this.player!.addEventListener(
+      'loading',
+      this.onStateUpdate.bind(this, State.Loading)
+    );
+    this.player!.addEventListener(
+      'loaded',
+      this.onStateUpdate.bind(this, State.Ready)
+    );
     this.player!.addEventListener('buffering', ({ buffering }: any) => {
       if (buffering === true) {
         this.onStateUpdate(State.Buffering);
@@ -92,7 +109,7 @@ export class Player {
    */
   protected onStateUpdate(state: Exclude<State, State.Error>) {
     this.state = { state };
- }
+  }
 
   protected onError(error: any) {
     // unload the current track to allow for clean playback on other
@@ -126,17 +143,15 @@ export class Player {
   public async stop() {
     if (!this.player) throw new SetupNotCalledError();
     this.current = undefined;
-    await this.player.unload()
+    await this.player.unload();
   }
 
   public play() {
     if (!this.element) throw new SetupNotCalledError();
     this.playWhenReady = true;
-    return this.element.play()
-      .catch(err => {
-        console.error(err);
-      })
-    ;
+    return this.element.play().catch((err) => {
+      console.error(err);
+    });
   }
 
   public pause() {
@@ -147,7 +162,7 @@ export class Player {
 
   public setRate(rate: number) {
     if (!this.element) throw new SetupNotCalledError();
-    return this.element.playbackRate = rate;
+    return (this.element.playbackRate = rate);
   }
 
   public getRate() {
@@ -177,12 +192,12 @@ export class Player {
 
   public getDuration() {
     if (!this.element) throw new SetupNotCalledError();
-    return this.element.duration
+    return this.element.duration;
   }
 
   public getPosition() {
     if (!this.element) throw new SetupNotCalledError();
-    return this.element.currentTime
+    return this.element.currentTime;
   }
 
   public getProgress(): Progress {
@@ -191,7 +206,7 @@ export class Player {
       position: this.element.currentTime,
       duration: this.element.duration || 0,
       buffered: 0, // TODO: this.element.buffered.end,
-    }
+    };
   }
 
   public getBufferedPosition() {

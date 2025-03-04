@@ -8,6 +8,7 @@ React Native Track Player supports playing audio while your app is in the
 background on all supported platforms.
 
 ## Android
+
 Background audio playback works right out of the box. By default, the audio will
 continue to play, not only when the app is suspended in the background, but also
 after the app is closed by the user. If that is not the desired behavior, you
@@ -46,6 +47,7 @@ custom initialization (e.g.: opening directly the player UI) by using the
 `trackplayer://notification.click` URI.
 
 ## iOS
+
 To allow background audio playback on iOS, you need to activate the 'Audio,
 Airplay and Picture in Picture' background mode in Xcode. Without activating it,
 the audio will only play when the app is in the foreground.
@@ -53,6 +55,7 @@ the audio will only play when the app is in the foreground.
 ![Xcode Background Capability](https://developer.apple.com/library/content/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/Art/background_modes_2x.png)
 
 ### iOS Simulator
+
 As of iOS Simulator version 11, Apple has removed support for Control Center and
 Now Playing Info from the simulator. You will not be able to test lock screen
 controls on recent versions of iOS Simulator. You can either test on real

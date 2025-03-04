@@ -7,18 +7,17 @@ sidebar_position: 6
 Due to how Android handles foreground services, it's not possible for us to stop the process manually, as it's waiting for the foreground service to come back. With v3 we are introducing the following changes related to this:
 
 - On Android, the audio service can't be manually stopped by the app anymore.
-    The OS itself decides when to stop it.
-- An audio control notification will *always* be present (depending on phone
-    vendor, this would look and behave differently), which allows users to
-    quickly go back to the app by tapping on it.
-- The `destroy` function does not exist anymore. 
-- The `stopWithApp` flag turns into `stoppingAppPausesPlayback` 
-    - [More information here](https://github.com/doublesymmetry/react-native-track-player/pull/1447#issuecomment-1195246389)
+  The OS itself decides when to stop it.
+- An audio control notification will _always_ be present (depending on phone
+  vendor, this would look and behave differently), which allows users to
+  quickly go back to the app by tapping on it.
+- The `destroy` function does not exist anymore.
+- The `stopWithApp` flag turns into `stoppingAppPausesPlayback`
+  - [More information here](https://github.com/doublesymmetry/react-native-track-player/pull/1447#issuecomment-1195246389)
 
 The full changelog of added features and bug fixes [can be found here](https://github.com/doublesymmetry/react-native-track-player/releases/tag/v3.0).
 
 When migrating from v2 to v3, the following has changed:
-
 
 ## API Changes
 

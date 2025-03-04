@@ -15,7 +15,8 @@ const FeatureList: FeatureItem[] = [
     description: (
       <>
         Optimized to use the least amount of resources according to your needs.
-         As everything is built together, it follows the same design principles as real music apps do.
+        As everything is built together, it follows the same design principles
+        as real music apps do.
       </>
     ),
   },
@@ -24,23 +25,19 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_building_blocks.svg').default,
     description: (
       <>
-        Local or network, files or stream. Adaptive bitrate with DASH, HLS or SmoothStreaming.
-        Background playback. Caching. Media Controls, and more!
+        Local or network, files or stream. Adaptive bitrate with DASH, HLS or
+        SmoothStreaming. Background playback. Caching. Media Controls, and more!
       </>
     ),
   },
   {
     title: 'Multi-Platform Support',
     Svg: require('@site/static/img/undraw_devices.svg').default,
-    description: (
-      <>
-        Supports Android, iOS and Web.
-      </>
-    ),
+    description: <>Supports Android, iOS and Web.</>,
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, Svg, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">

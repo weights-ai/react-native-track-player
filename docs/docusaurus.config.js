@@ -25,7 +25,8 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/doublesymmetry/react-native-track-player/tree/main/docs/',
+          editUrl:
+            'https://github.com/doublesymmetry/react-native-track-player/tree/main/docs/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -87,7 +88,7 @@ const config = {
               {
                 label: 'API Reference',
                 to: '/docs/api/events',
-              }
+              },
             ],
           },
           {

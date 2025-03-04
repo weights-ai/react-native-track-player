@@ -99,6 +99,7 @@ Make a note of the `versionNumber` configured in the `kotlin-audio/build.gradle`
 file as you'll need this in the next step.
 
 **NOTES:**
+
 - The result of this is a local version of the build published here:
 
   ```
@@ -106,6 +107,7 @@ file as you'll need this in the next step.
   Linux: /home/<user_name>/.m2
   macOS: /Users/<user_name>/.m2
   ```
+
 - The `-x test` skips tests for faster build. Make sure you run the test
   before submitting a PR to the `KotlinAudio` project.
 
@@ -127,7 +129,6 @@ dependencies {
 ```
 
 **NOTE:** there are small differences in the package naming.
-
 
 #### 4. Install the new version of RNTP in the example app and build android:
 

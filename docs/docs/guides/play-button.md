@@ -14,9 +14,9 @@ Implementing this correctly will take a bit of care. For instance, `usePlaybackS
 
 To determine how to render a Play button in its three states correctly, do the following:
 
-* Render the button as a spinner if `playWhenReady` and `state === State.Loading || state === State.Buffering`
-* Else render the button as being in the Playing state if `playWhenReady && !(state === State.Error || state === State.Buffering)`
-* Otherwise render the button as being in the Paused state
+- Render the button as a spinner if `playWhenReady` and `state === State.Loading || state === State.Buffering`
+- Else render the button as being in the Playing state if `playWhenReady && !(state === State.Error || state === State.Buffering)`
+- Otherwise render the button as being in the Paused state
 
 To help with this logic, the API has two utilities:
 

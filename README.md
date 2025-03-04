@@ -5,7 +5,7 @@
 [![discord](https://img.shields.io/discord/567636850513018880.svg)](https://discordapp.com/invite/ya2XDCR)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-----
+---
 
 A fully-fledged audio module created for music apps. Provides audio playback, external media controls, background mode and more!
 
@@ -26,13 +26,13 @@ _[Blaze](https://runblaze.dev) sponsors RNTP by providing super fast Apple Silic
 ## Overview
 
 - [Documentation](https://rntp.dev)
-  * [Installation](https://rntp.dev/docs/basics/installation/)
-  * [Getting Started](https://rntp.dev/docs/basics/getting-started/)
-  * [API Docs](https://rntp.dev/docs/api/events)
-  * [Platform Support](https://rntp.dev/docs/basics/platform-support)
-  * [Background Mode](https://rntp.dev/docs/basics/background-mode)
-  * [Build Preferences](https://rntp.dev/docs/basics/build-preferences)
-  * [v2 Migration Guide](https://rntp.dev/docs/v2-migration)
+  - [Installation](https://rntp.dev/docs/basics/installation/)
+  - [Getting Started](https://rntp.dev/docs/basics/getting-started/)
+  - [API Docs](https://rntp.dev/docs/api/events)
+  - [Platform Support](https://rntp.dev/docs/basics/platform-support)
+  - [Background Mode](https://rntp.dev/docs/basics/background-mode)
+  - [Build Preferences](https://rntp.dev/docs/basics/build-preferences)
+  - [v2 Migration Guide](https://rntp.dev/docs/v2-migration)
 - [Sponsors](#sponsors)
 - [Features](#features)
 - [Why another music module?](#why-another-music-module)
@@ -56,18 +56,19 @@ Not sure where to start?
 
 ## Features
 
-* **Lightweight** - Optimized to use the least amount of resources according to your needs
-* **Feels native** - As everything is built together, it follows the same design principles as real music apps do
-* **Multi-platform** - Supports Android, iOS and Web
-* **Media Controls support** - Provides events for controlling the app from a Bluetooth device, the lock screen, a notification, a smartwatch or even a car
-* **Local or network, files or streams** - It doesn't matter where the media belongs, we've got you covered
-* **Adaptive bitrate streaming support** - Support for DASH, HLS or SmoothStreaming
-* **Caching support** - Cache media files to play them again without an internet connection
-* **Background support** - Keep playing audio even after the app is in background
-* **Fully Customizable** - Even the notification icons are customizable!
-* **Supports React Hooks 🎣** - Includes React Hooks for common use-cases so you don't have to write them
+- **Lightweight** - Optimized to use the least amount of resources according to your needs
+- **Feels native** - As everything is built together, it follows the same design principles as real music apps do
+- **Multi-platform** - Supports Android, iOS and Web
+- **Media Controls support** - Provides events for controlling the app from a Bluetooth device, the lock screen, a notification, a smartwatch or even a car
+- **Local or network, files or streams** - It doesn't matter where the media belongs, we've got you covered
+- **Adaptive bitrate streaming support** - Support for DASH, HLS or SmoothStreaming
+- **Caching support** - Cache media files to play them again without an internet connection
+- **Background support** - Keep playing audio even after the app is in background
+- **Fully Customizable** - Even the notification icons are customizable!
+- **Supports React Hooks 🎣** - Includes React Hooks for common use-cases so you don't have to write them
 
 ## Why another music module?
+
 After trying to team up modules like `react-native-sound`, `react-native-music-controls` and `react-native-google-cast`, I've noticed that their structure and the way they should be tied together can cause a lot of problems (mainly on Android). Those can heavily affect the app stability and user experience.
 
 All audio modules (like `react-native-sound`) don't play in a separated service on Android, which should **only** be used for simple audio tracks in the foreground (such as sound effects, voice messages, etc.)
@@ -84,20 +85,20 @@ First please take a look at the [Getting Started](https://rntp.dev/docs/basics/g
 import TrackPlayer from 'react-native-track-player';
 
 const start = async () => {
-    // Set up the player
-    await TrackPlayer.setupPlayer();
+  // Set up the player
+  await TrackPlayer.setupPlayer();
 
-    // Add a track to the queue
-    await TrackPlayer.add({
-        id: 'trackId',
-        url: require('track.mp3'),
-        title: 'Track Title',
-        artist: 'Track Artist',
-        artwork: require('track.png')
-    });
+  // Add a track to the queue
+  await TrackPlayer.add({
+    id: 'trackId',
+    url: require('track.mp3'),
+    title: 'Track Title',
+    artist: 'Track Artist',
+    artwork: require('track.png'),
+  });
 
-    // Start playing it
-    await TrackPlayer.play();
+  // Start playing it
+  await TrackPlayer.play();
 };
 start();
 ```
@@ -143,7 +144,7 @@ in order of priority.
 
 1. Fixing **_widespread, common, and critical Bugs_**.
 2. Fixing **_uncommon but necessary Bugs_**.
-3. Introducing new  **_Features that have broad value_**.
+3. Introducing new **_Features that have broad value_**.
 
 Now keep in mind available resources. Long story short, the thing you care about
 needs to be cared about by either a lot of other people, or by us.
@@ -205,7 +206,6 @@ This command will:
 2. Bump the package version
 3. Tag & pushing the commit
 4. Build & publish the package
-
 
 ## Community
 

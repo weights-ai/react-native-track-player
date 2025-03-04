@@ -3,7 +3,7 @@
 This project utilizes [the Angular Conventional Changelog commit message format](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular#commit-message-format).
 We use this format to automatically generate our Changelog file.
 
-A commit message consists of a **header**, **body** and **footer**.  The header
+A commit message consists of a **header**, **body** and **footer**. The header
 has a **type**, **scope** and **subject**:
 
 ```
@@ -44,9 +44,9 @@ The scope could be anything specifying place of the commit change. For example
 
 The subject contains succinct description of the change:
 
-* use the imperative, present tense: "change" not "changed" nor "changes"
-* don't capitalize first letter
-* no dot (.) at the end
+- use the imperative, present tense: "change" not "changed" nor "changes"
+- don't capitalize first letter
+- no dot (.) at the end
 
 ### Body
 

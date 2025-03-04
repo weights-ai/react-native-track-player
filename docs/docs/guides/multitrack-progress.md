@@ -58,9 +58,10 @@ type ProgressStateStore = {
 export const useProgressStateStore = create<ProgressStateStore>(
   (set: SetState<ProgressStateStore>) => ({
     map: {},
-    setProgress: (id: string, progress: number) => set((state) => {
-      state.map[id] = progress;
-    }),
+    setProgress: (id: string, progress: number) =>
+      set((state) => {
+        state.map[id] = progress;
+      }),
   })
 );
 ```
@@ -74,9 +75,14 @@ import { useCallback } from 'react';
 import { useProgressStateStore } from '../store';
 
 export const useTrackProgress = (id: string | number): number => {
-  return useProgressStateStore(useCallback(state => {
-    return state.map[id.toString()] || 0;
-  }, [id]));
+  return useProgressStateStore(
+    useCallback(
+      (state) => {
+        return state.map[id.toString()] || 0;
+      },
+      [id]
+    )
+  );
 };
 ```
 
@@ -93,19 +99,21 @@ import { useProgressStateStore } from '../store';
 // create a local reference for the `setProgress` function
 const setProgress = useProgressStateStore.getState().setProgress;
 
-export const PlaybackService = async function() {
-  TrackPlayer.addEventListener(Event.PlaybackProgressUpdated, async ({ position, track }) => {
-    // get the track to fetch your unique ID property (if applicable)
-    const track = await TrackPlayer.getTrack(track);
-    // write progress to the zustand store
-    setProgress(track.id, position);
-  });
+export const PlaybackService = async function () {
+  TrackPlayer.addEventListener(
+    Event.PlaybackProgressUpdated,
+    async ({ position, track }) => {
+      // get the track to fetch your unique ID property (if applicable)
+      const track = await TrackPlayer.getTrack(track);
+      // write progress to the zustand store
+      setProgress(track.id, position);
+    }
+  );
 };
 ```
 
 ⚠️ make sure you've configured your `progressUpdateEventInterval`
 in the `TrackPlayer.updateOptions` call.
-
 
 #### 3. Reactively Update Progress
 
@@ -121,9 +129,7 @@ export interface TrackListItemProps {}
 
 export const TrackListItem: React.FC<TrackListItemProps> = (track: Track) => {
   const progress = useTrackProgress(track.id);
-  return (
-    <Text>Progress: {progress}</Text>
-  );
+  return <Text>Progress: {progress}</Text>;
 };
 ```
 

@@ -2,7 +2,7 @@
 sidebar_position: 7
 ---
 
-# Sponsors  ❤️
+# Sponsors ❤️
 
 Thanks to our backers and sponsors for their generous support!
 

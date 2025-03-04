@@ -13,6 +13,7 @@ The playback service keeps running even when the app is in the background. It wi
 If you create a listener to a remote event like `Event.RemotePause` in the context of a React component, there is a chance the UI will be unmounted automatically when the app is in the background, causing it to be missed. For this reason it is best to place remote listeners in the playback service, since it will keep running even when the app is in the background.
 
 ## Example
+
 ```js
 import { PlaybackService } from './src/services';
 
@@ -25,14 +26,12 @@ TrackPlayer.registerPlaybackService(() => PlaybackService);
 // src/services/PlaybackService.ts
 import { Event } from 'react-native-track-player';
 
-export const PlaybackService = async function() {
+export const PlaybackService = async function () {
+  TrackPlayer.addEventListener(Event.RemotePlay, () => TrackPlayer.play());
 
-    TrackPlayer.addEventListener(Event.RemotePlay, () => TrackPlayer.play());
+  TrackPlayer.addEventListener(Event.RemotePause, () => TrackPlayer.pause());
 
-    TrackPlayer.addEventListener(Event.RemotePause, () => TrackPlayer.pause());
-
-    // ...
-
+  // ...
 };
 ```
 
@@ -40,11 +39,13 @@ export const PlaybackService = async function() {
 
 react-native-track-player is using media controls.
 As a result, it creates a notification channel.
- - More information read here: https://developer.android.com/media/implement/surfaces/mobile
+
+- More information read here: https://developer.android.com/media/implement/surfaces/mobile
 
 To customize it, put the example below inside your project folder.
 
 ## Example
+
 ```xml
 <!-- YOUR_PROJECT_DIR/android/app/src/main/res/values/strings.xml -->
 <resources>

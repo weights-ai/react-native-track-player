@@ -9,7 +9,6 @@ Accepts a [`PlayerOptions`](../objects/player-options.md) object.
 Accepts a [`UpdateOptions`](../objects/update-options.md) object. Updates
 the configuration for the components.
 
-
 ⚠️ These parameters are different than the ones set using `setupPlayer()`.
 Parameters other than those listed below will not be applied.
 
@@ -37,8 +36,8 @@ Retries the current track when it stopped playing due to a playback error.
 
 Seeks by a relative time offset in the current track.
 
-| Param   | Type     | Description             |
-| ------- | -------- | ----------------------- |
+| Param  | Type     | Description           |
+| ------ | -------- | --------------------- |
 | offset | `number` | The offset in seconds |
 
 **Returns:** `Promise<void>`
@@ -70,11 +69,12 @@ Gets the volume of the player (a number between 0 and 1).
 **Returns:** `Promise<number>`
 
 ## `setRate(rate)`
+
 Sets the playback rate
 
-| Param  | Type     | Description                       |
-| ------ | -------- | --------------------------------- |
-| rate   | `number` | The playback rate where 1 is the regular speed |
+| Param | Type     | Description                                    |
+| ----- | -------- | ---------------------------------------------- |
+| rate  | `number` | The playback rate where 1 is the regular speed |
 
 **Note:** If your rate is high, e.g. above 2, you may want to set the track's `pitchAlgorithm` to something like `PitchAlgorithm.Voice`, or else the default pitch algorithm (which in `SwiftAudioEx` drops down to `AVAudioTimePitchAlgorithm.lowQualityZeroLatency`) will likely
 drop words in your audio.
@@ -109,8 +109,8 @@ Gets the current state of `playWhenReady`.
 and `TrackPlayer.setPlayWhenReady(true)` is the equivalent of
 `TrackPlayer.play()`.
 
-| Param  | Type     | Description                       |
-| ------ | -------- | --------------------------------- |
+| Param         | Type      | Description                                                    |
+| ------------- | --------- | -------------------------------------------------------------- |
 | playWhenReady | `boolean` | A boolean representing if you want `playWhenReady` set or not. |
 
 ## ⚠️ `getState()`
@@ -121,7 +121,6 @@ Gets the playback [`State`](../constants/state.md) of the player.
 
 **Returns:** `Promise<`[State](../constants/state.md)`>`
 
-
 ## ⚠️ `getDuration()`
 
 **⚠️ Deprecated**
@@ -129,7 +128,7 @@ Gets the playback [`State`](../constants/state.md) of the player.
 Gets the duration of the current track in seconds.
 
 Note: `react-native-track-player` is a streaming library, which means it slowly buffers the track and doesn't know exactly when it ends.
-The duration returned by this function is determined through various tricks and *may not be exact or may not be available at all*.
+The duration returned by this function is determined through various tricks and _may not be exact or may not be available at all_.
 
 You should only trust the result of this function if you included the `duration` property in the [Track Object](../objects/track.md).
 

@@ -10,8 +10,8 @@ All RepeatMode types are made available through the named export `RepeatMode`:
 import { RepeatMode } from 'react-native-track-player';
 ```
 
-| Name | Description |
-|------|-------------|
-| `Off` | Doesn't repeat. |
+| Name    | Description              |
+| ------- | ------------------------ |
+| `Off`   | Doesn't repeat.          |
 | `Track` | Loops the current track. |
 | `Queue` | Repeats the whole queue. |

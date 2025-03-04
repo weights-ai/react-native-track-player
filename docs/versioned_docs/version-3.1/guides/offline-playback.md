@@ -8,7 +8,7 @@ There are two general use-cases for offline playback:
 
 1. An "Offline Only" case where all the audio is bundled with your App itself.
 2. A "Hybrid Offline/Network" case where some of the time you're playing from a
-  network and sometime you're playing offline.
+   network and sometime you're playing offline.
 
 Both of these can be achieved by with this project. The only practical
 difference between the two is in the 2nd you'll need another package to

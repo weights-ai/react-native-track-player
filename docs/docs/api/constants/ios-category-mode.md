@@ -19,7 +19,6 @@ uses GameKit’s voice chat service.
 
 [See the Apple Docs](https://developer.apple.com/documentation/avfaudio/avaudiosession/mode/1616511-gamechat)
 
-
 ## `Measurement`
 
 A mode that indicates that your app is performing measurement of audio
@@ -58,7 +57,6 @@ A mode that indicates that your app is performing two-way voice communication,
 such as using Voice over Internet Protocol (VoIP).
 
 [See the Apple Docs](https://developer.apple.com/documentation/avfaudio/avaudiosession/mode/1616455-voicechat)
-
 
 ## `VoicePrompt`
 

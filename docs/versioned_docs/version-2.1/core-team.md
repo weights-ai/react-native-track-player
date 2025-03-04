@@ -2,7 +2,7 @@
 sidebar_position: 8
 ---
 
-# Core Team  ✨
+# Core Team ✨
 
 <table>
   <tr>
@@ -31,6 +31,7 @@ sidebar_position: 8
 </table>
 
 ## Special Thanks ✨
+
 <table>
   <tr>
     <td align="center">

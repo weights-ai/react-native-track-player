@@ -17,7 +17,6 @@ successful use of your app.
 
 [See the Apple Docs](https://developer.apple.com/documentation/avfaudio/avaudiosession/category/1616509-playback)
 
-
 ## `PlayAndRecord`
 
 The category for recording (input) and playback (output) of audio, such as for a
@@ -30,8 +29,8 @@ Voice over Internet Protocol (VoIP) app.
 The category for routing distinct streams of audio data to different output
 devices at the same time.
 
-[See the Apple Docs](https://developer.apple.com/documentation/avfaudio/avaudiosession/category/1616484-multiroute) 
-  
+[See the Apple Docs](https://developer.apple.com/documentation/avfaudio/avaudiosession/category/1616484-multiroute)
+
 ## `Ambient`
 
 The category for an app in which sound playback is nonprimary — that is, your

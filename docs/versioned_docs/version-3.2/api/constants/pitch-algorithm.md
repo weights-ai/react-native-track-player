@@ -10,8 +10,8 @@ All PitchAlgorithm types are made available through the named export `PitchAlgor
 import { PitchAlgorithm } from 'react-native-track-player';
 ```
 
-| Name | Description |
-|------|-------------|
+| Name     | Description                            |
+| -------- | -------------------------------------- |
 | `Linear` | An algorithm suitable for general use. |
-| `Music` | An algorithm suitable for music. |
-| `Voice` | An algorithm suitable for voice. |
+| `Music`  | An algorithm suitable for music.       |
+| `Voice`  | An algorithm suitable for voice.       |

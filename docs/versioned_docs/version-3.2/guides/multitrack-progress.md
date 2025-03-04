@@ -58,9 +58,10 @@ type ProgressStateStore = {
 export const useProgressStateStore = create<ProgressStateStore>(
   (set: SetState<ProgressStateStore>) => ({
     map: {},
-    setProgress: (id: string, progress: number) => set((state) => {
-      state.map[id] = progress;
-    }),
+    setProgress: (id: string, progress: number) =>
+      set((state) => {
+        state.map[id] = progress;
+      }),
   })
 );
 ```
@@ -74,9 +75,14 @@ import { useCallback } from 'react';
 import { useProgressStateStore } from '../store';
 
 export const useTrackProgress = (id: string | number): number => {
-  return useProgressStateStore(useCallback(state => {
-    return state.map[id.toString()] || 0;
-  }, [id]));
+  return useProgressStateStore(
+    useCallback(
+      (state) => {
+        return state.map[id.toString()] || 0;
+      },
+      [id]
+    )
+  );
 };
 ```
 
@@ -93,7 +99,7 @@ import { useProgressStateStore } from '../store';
 // create a local reference for the `setProgress` function
 const setProgress = useProgressStateStore.getState().setProgress;
 
-export const PlaybackService = async function() {
+export const PlaybackService = async function () {
   TrackPlayer.addEventListener(Event.PlaybackProgressUpdated, async () => {
     // get the position and currently playing track.
     const position = TrackPlayer.getPosition();
@@ -121,9 +127,7 @@ export interface TrackListItemProps {}
 
 export const TrackListItem: React.FC<TrackListItemProps> = (track: Track) => {
   const progress = useTrackProgress(track.id);
-  return (
-    <Text>Progress: {progress}</Text>
-  );
+  return <Text>Progress: {progress}</Text>;
 };
 ```
 

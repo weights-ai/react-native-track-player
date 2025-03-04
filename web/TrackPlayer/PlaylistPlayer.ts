@@ -1,7 +1,7 @@
 import { Player } from './Player';
 
 import type { Track } from '../../src/interfaces';
-import {RepeatMode} from './RepeatMode';
+import { RepeatMode } from './RepeatMode';
 import { State } from '../../src';
 
 export class PlaylistPlayer extends Player {
@@ -130,12 +130,12 @@ export class PlaylistPlayer extends Player {
 
   public async remove(indexes: number[]) {
     const idxMap = indexes.reduce<Record<number, boolean>>((acc, elem) => {
-      acc[elem] = true
+      acc[elem] = true;
       return acc;
     }, {});
     let isCurrentRemoved = false;
     this.playlist = this.playlist.filter((_track, idx) => {
-      const keep = !idxMap[idx]
+      const keep = !idxMap[idx];
 
       if (!keep && idx === this.currentIndex) {
         isCurrentRemoved = true;
@@ -190,7 +190,7 @@ export class PlaylistPlayer extends Player {
       if (fromIndex < this.currentIndex && toIndex > this.currentIndex) {
         shift = -1;
       } else if (fromIndex > this.currentIndex && toIndex < this.currentIndex) {
-        shift = + 1;
+        shift = +1;
       }
     }
 
@@ -200,7 +200,7 @@ export class PlaylistPlayer extends Player {
     this.playlist.splice(toIndex, 0, fromItem);
 
     if (this.currentIndex && shift) {
-      this.currentIndex = this.currentIndex + shift
+      this.currentIndex = this.currentIndex + shift;
     }
   }
 
@@ -211,5 +211,4 @@ export class PlaylistPlayer extends Player {
   public clearNowPlayingMetadata() {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public updateNowPlayingMetadata(metadata: Partial<Track>) {}
-
 }

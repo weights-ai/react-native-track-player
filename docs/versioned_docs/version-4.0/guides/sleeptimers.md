@@ -17,4 +17,4 @@ Here's how you would use an event to implement a sleep timer:
 1. The user configures a sleep timer in the UI.
 2. Persist the time they configure in a store as a timestamp.
 3. Each time the progress event fires you check your persisted sleep timer timestamp.
-    - IF `sleeptime !== null && sleeptime <= now` THEN pause.
+   - IF `sleeptime !== null && sleeptime <= now` THEN pause.
