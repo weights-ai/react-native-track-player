@@ -45,6 +45,7 @@ export class Player {
       };
     }
 
+    // @ts-expect-error - not a module
     const shaka = await import('shaka-player/dist/shaka-player.ui');
     // Install built-in polyfills to patch browser incompatibilities.
     shaka.polyfill.installAll();
@@ -99,7 +100,7 @@ export class Player {
     });
 
     // Attach player to the window to make it easy to access in the JS console.
-    // @ts-ignore
+    // @ts-expect-error assigning to window
     window.rntp = this.player;
     this.hasInitialized = true;
   }
