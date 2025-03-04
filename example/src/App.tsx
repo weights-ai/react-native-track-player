@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#212121',
     alignItems: 'center',
     justifyContent: 'center',
+    // @ts-expect-error - 100vh on web
     minHeight: Platform.OS === 'web' ? '100vh' : '100%',
   },
   contentContainer: {

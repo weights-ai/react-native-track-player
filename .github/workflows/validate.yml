@@ -51,18 +51,18 @@ jobs:
         if: ${{ needs.check-changes.outputs.should-check-types }}
         uses: actions/checkout@v4
       - name: Setup Environment
-        uses: pkgxdev/setup@v2
+        uses: pkgxdev/setup@v3
         with:
-          +: classic.yarnpkg.com
+          +: yarn@4
       - name: Install Dependencies
         if: ${{ needs.check-changes.outputs.should-check-types }}
         run: |-
-          yarn install --frozen-lockfile
+          yarn install --immutable
       - name: Install Example Dependencies
         if: ${{ needs.check-changes.outputs.should-check-types }}
         run: |-
           cd example
-          yarn install --frozen-lockfile
+          yarn install --immutable
       - name: Check Lint, Format & Types
         if: ${{ needs.check-changes.outputs.should-check-types }}
         run: |

@@ -12,7 +12,7 @@
     "resolveJsonModule": true,
     "jsx": "react-native",
     "lib": ["es2017", "DOM", "DOM.Iterable"],
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "baseUrl": ".",
     "outDir": "./lib",
     "strict": true,
