@@ -9,11 +9,12 @@ export function useAppIsInBackground() {
       setState(nextState);
     };
 
-    AppState.addEventListener('change', onStateChange);
+    const sub = AppState.addEventListener('change', onStateChange);
 
     return () => {
-      AppState.removeEventListener('change', onStateChange);
+      sub.remove();
     };
   }, []);
+
   return state === 'background';
 }

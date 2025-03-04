@@ -2526,6 +2526,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@weights-ai/react-native-track-player@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@weights-ai/react-native-track-player@workspace:."
+  dependencies:
+    "@types/react": "npm:^18"
+    "@typescript-eslint/eslint-plugin": "npm:^5.36.0"
+    "@typescript-eslint/parser": "npm:^5.36.0"
+    conventional-changelog-cli: "npm:^2.2.2"
+    cz-conventional-changelog: "npm:3.3.0"
+    eslint: "npm:^8.23.0"
+    eslint-plugin-react-hooks: "npm:^4.6.0"
+    husky: "npm:^8.0.0"
+    prettier: "npm:^2.7.1"
+    react: "npm:17.0.2"
+    react-native: "npm:0.77.1"
+    react-native-windows: "npm:0.77.1"
+    rimraf: "npm:^2.6.2"
+    shaka-player: "npm:^4.7.9"
+    typescript: "npm:^4.8.2"
+  peerDependencies:
+    react: ">=18"
+    react-native: ">=0.77"
+    react-native-windows: ">=0.77"
+    shaka-player: ^4.7.9
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+    shaka-player:
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@xmldom/xmldom@npm:^0.7.7":
   version: 0.7.13
   resolution: "@xmldom/xmldom@npm:0.7.13"
@@ -7397,38 +7429,6 @@ __metadata:
   checksum: 10c0/2bdb6b93fbb1820b024b496042cce405c57e2f85e777c9aabd55f9b26d145408f9f74f5934676ffdc46f3dcff656d78413a6e43968e7b3f92eea35b3052e9053
   languageName: node
   linkType: hard
-
-"react-native-track-player@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "react-native-track-player@workspace:."
-  dependencies:
-    "@types/react": "npm:^18"
-    "@typescript-eslint/eslint-plugin": "npm:^5.36.0"
-    "@typescript-eslint/parser": "npm:^5.36.0"
-    conventional-changelog-cli: "npm:^2.2.2"
-    cz-conventional-changelog: "npm:3.3.0"
-    eslint: "npm:^8.23.0"
-    eslint-plugin-react-hooks: "npm:^4.6.0"
-    husky: "npm:^8.0.0"
-    prettier: "npm:^2.7.1"
-    react: "npm:17.0.2"
-    react-native: "npm:0.77.1"
-    react-native-windows: "npm:0.77.1"
-    rimraf: "npm:^2.6.2"
-    shaka-player: "npm:^4.7.9"
-    typescript: "npm:^4.8.2"
-  peerDependencies:
-    react: ">=18"
-    react-native: ">=0.77"
-    react-native-windows: ">=0.77"
-    shaka-player: ^4.7.9
-  peerDependenciesMeta:
-    react-native-windows:
-      optional: true
-    shaka-player:
-      optional: true
-  languageName: unknown
-  linkType: soft
 
 "react-native-windows@npm:0.77.1":
   version: 0.77.1
