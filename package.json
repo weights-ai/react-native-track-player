@@ -1,5 +1,5 @@
 {
-  "name": "react-native-track-player",
+  "name": "@weights-ai/react-native-track-player",
   "version": "4.1.1",
   "description": "A fully fledged audio module created for music apps",
   "main": "lib/src/index.js",
@@ -77,9 +77,9 @@
     "url": "https://github.com/doublesymmetry/react-native-track-player/issues"
   },
   "peerDependencies": {
-    "react": ">=16.8.6",
-    "react-native": ">=0.60.0-rc.2",
-    "react-native-windows": ">=0.63.0",
+    "react": ">=18",
+    "react-native": ">=0.77",
+    "react-native-windows": ">=0.77",
     "shaka-player": "^4.7.9"
   },
   "peerDependenciesMeta": {
@@ -91,8 +91,7 @@
     }
   },
   "devDependencies": {
-    "@types/react": "^17.0.52",
-    "@types/react-native": "^0.68",
+    "@types/react": "^18",
     "@typescript-eslint/eslint-plugin": "^5.36.0",
     "@typescript-eslint/parser": "^5.36.0",
     "conventional-changelog-cli": "^2.2.2",
@@ -102,8 +101,8 @@
     "husky": "^8.0.0",
     "prettier": "^2.7.1",
     "react": "17.0.2",
-    "react-native": "0.68.5",
-    "react-native-windows": "^0.65.0-0",
+    "react-native": "0.77.1",
+    "react-native-windows": "0.77.1",
     "rimraf": "^2.6.2",
     "shaka-player": "^4.7.9",
     "typescript": "^4.8.2"
