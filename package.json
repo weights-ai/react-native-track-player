@@ -113,10 +113,5 @@
       "path": "cz-conventional-changelog"
     }
   },
-  "tea": {
-    "dependencies": {
-      "classic.yarnpkg.com": "^1"
-    }
-  },
   "packageManager": "yarn@4.7.0"
 }

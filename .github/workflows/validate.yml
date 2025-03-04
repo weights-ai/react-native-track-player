@@ -50,10 +50,6 @@ jobs:
       - name: Checkout Repo
         if: ${{ needs.check-changes.outputs.should-check-types }}
         uses: actions/checkout@v4
-      - name: Setup Environment
-        uses: pkgxdev/setup@v3
-        with:
-          +: yarn@4
       - name: Install Dependencies
         if: ${{ needs.check-changes.outputs.should-check-types }}
         run: |-
@@ -87,7 +83,6 @@ jobs:
         uses: pkgxdev/setup@v3
         with:
           +: ruby-lang.org@3.1.0
-            yarn@4
             tuist.io/xcbeautify
       - name: Install Library Dependencies
         if: ${{ needs.check-changes.outputs.should-build-ios }}
@@ -132,10 +127,6 @@ jobs:
       - name: Checkout Repo
         if: ${{ needs.check-changes.outputs.should-build-android }}
         uses: actions/checkout@v4
-      - name: Setup Environment
-        uses: pkgxdev/setup@v3
-        with:
-          +: yarn@4
       - name: Install Library Dependencies
         if: ${{ needs.check-changes.outputs.should-build-android }}
         run: yarn install --immutable
@@ -176,10 +167,6 @@ jobs:
       - name: Checkout Repo
         if: ${{ needs.check-changes.outputs.should-build-docs }}
         uses: actions/checkout@v4
-      - name: Setup Environment
-        uses: pkgxdev/setup@v2
-        with:
-          +: yarn@4
       - name: Install Dependencies
         if: ${{ needs.check-changes.outputs.should-build-docs }}
         run: |-
