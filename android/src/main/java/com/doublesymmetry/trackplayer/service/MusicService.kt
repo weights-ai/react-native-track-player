@@ -741,7 +741,7 @@ class MusicService : HeadlessJsTaskService() {
 
     @MainThread
     private fun emit(event: String, data: Bundle? = null) {
-        reactContext.emitDeviceEvent(event, data?.let { Arguments.fromBundle(it) })
+        reactContext?.emitDeviceEvent(event, data?.let { Arguments.fromBundle(it) })
     }
 
     @MainThread
@@ -749,17 +749,17 @@ class MusicService : HeadlessJsTaskService() {
         val payload = Arguments.createArray()
         data.forEach { payload.pushMap(Arguments.fromBundle(it)) }
 
-        reactContext.emitDeviceEvent(event, payload)
+        reactContext?.emitDeviceEvent(event, payload)
     }
 
     override fun getTaskConfig(intent: Intent?): HeadlessJsTaskConfig {
         return HeadlessJsTaskConfig(TASK_KEY, Arguments.createMap(), 0, true)
     }
 
-    @MainThread
-    override fun onBind(intent: Intent?): IBinder {
-        return binder
-    }
+    // @MainThread
+    // fun onBind(intent: Intent?): IBinder {
+    //    return binder
+    // }
 
     @MainThread
     override fun onTaskRemoved(rootIntent: Intent?) {
