@@ -41,7 +41,7 @@ export class Player {
       // TODO: double check the structure of this error message
       throw {
         code: 'player_already_initialized',
-        message: 'The player is not initialized. Call setupPlayer first.',
+        message: 'The player is already initialized',
       };
     }
 
