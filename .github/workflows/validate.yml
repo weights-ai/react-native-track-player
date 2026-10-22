@@ -50,6 +50,14 @@ jobs:
       - name: Checkout Repo
         if: ${{ needs.check-changes.outputs.should-check-types }}
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        if: ${{ needs.check-changes.outputs.should-check-types }}
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - name: Enable Yarn
+        if: ${{ needs.check-changes.outputs.should-check-types }}
+        run: npm install --global corepack@0.36.0 --force && corepack enable
       - name: Install Dependencies
         if: ${{ needs.check-changes.outputs.should-check-types }}
         run: |-
@@ -79,6 +87,14 @@ jobs:
       - name: Checkout Repo
         if: ${{ needs.check-changes.outputs.should-build-ios }}
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        if: ${{ needs.check-changes.outputs.should-build-ios }}
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - name: Enable Yarn
+        if: ${{ needs.check-changes.outputs.should-build-ios }}
+        run: npm install --global corepack@0.36.0 --force && corepack enable
       - name: Setup Environment
         uses: pkgxdev/setup@v3
         with:
@@ -127,6 +143,14 @@ jobs:
       - name: Checkout Repo
         if: ${{ needs.check-changes.outputs.should-build-android }}
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        if: ${{ needs.check-changes.outputs.should-build-android }}
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - name: Enable Yarn
+        if: ${{ needs.check-changes.outputs.should-build-android }}
+        run: npm install --global corepack@0.36.0 --force && corepack enable
       - name: Install Library Dependencies
         if: ${{ needs.check-changes.outputs.should-build-android }}
         run: yarn install --immutable
@@ -167,6 +191,14 @@ jobs:
       - name: Checkout Repo
         if: ${{ needs.check-changes.outputs.should-build-docs }}
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        if: ${{ needs.check-changes.outputs.should-build-docs }}
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - name: Enable Yarn
+        if: ${{ needs.check-changes.outputs.should-build-docs }}
+        run: npm install --global corepack@0.36.0 --force && corepack enable
       - name: Install Dependencies
         if: ${{ needs.check-changes.outputs.should-build-docs }}
         run: |-
