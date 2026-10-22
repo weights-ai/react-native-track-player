@@ -81,7 +81,7 @@ jobs:
           yarn run ci:format
           yarn run types
   build-ios:
-    runs-on: blaze/macos-14
+    runs-on: macos-15
     needs: check-changes
     steps:
       - name: Checkout Repo
@@ -135,7 +135,7 @@ jobs:
         if: ${{ needs.check-changes.outputs.should-build-ios }}
         run: |-
           cd example/ios
-          set -o pipefail && xcodebuild build -workspace RNTPExample.xcworkspace -scheme RNTPExample -destination 'platform=iOS Simulator,name=iPhone 15 Pro' | xcbeautify --renderer github-actions
+          set -o pipefail && xcodebuild build -workspace RNTPExample.xcworkspace -scheme RNTPExample -destination 'generic/platform=iOS Simulator' | xcbeautify --renderer github-actions
   build-android:
     runs-on: ubuntu-latest
     needs: check-changes
@@ -162,6 +162,12 @@ jobs:
         run: |-
           cd example
           yarn install
+      - name: Setup Java
+        if: ${{ needs.check-changes.outputs.should-build-android }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
       - name: Cache Gradle Wrapper
         if: ${{ needs.check-changes.outputs.should-build-android }}
         uses: actions/cache@v4
